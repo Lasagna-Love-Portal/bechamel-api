@@ -50,7 +50,6 @@ components:
         - password
         - givenName
         - familyName
-
     ReturnedError:
       description: Error return type for API operations with error information, when an error occurs during an API call
       type: object
@@ -61,16 +60,22 @@ components:
             type: string
             description: Array of one or more strings describing the error or errors encountered processing the request
   responses:
+    BadRequest:
+      description: Returned when a missing or incomplete request body or URI is provided,
+        when one or more required parameters are missing from the provided request body,
+        or when invalid parameters are included in the request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReturnedError'
     Unauthorized:
       description: Access token is missing, invalid or user for supplied token is not authorized to access the API
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ReturnedError'
-    BadRequest:
-      description: Returned when a missing or incomplete request body or URI is provided,
-        when one or more required parameters are missing from the provided request body,
-        or when invalid parameters are included in the request body.
+    NotFound:
+      description: The requested resource is not found, or the requesting user is not permitted to access the requested resource
       content:
         application/json:
           schema:
@@ -164,5 +169,49 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401': # Unauthorized
           $ref: '#/components/responses/Unauthorized'
+        '500': # Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Add a new user profile to the system
+      requestBody:
+        description: Information about the new user to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      responses:
+        # The return of the created Profile instead of just a Location header return is intentional here,
+        # as many users of the Lasagna Love system will not have sufficient access to request a profile by ID
+        '201': # Created
+          description: Returns the newly created user profile in the repsonse body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400': # Bad Request
+          $ref: '#/components/responses/BadRequest'
+        '401': # Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '500': # Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
+
+  /profile/{id}:
+    get:
+      summary: Returns the profile for the user specified by the supplied ID.
+        The logged in user must have sufficient permission to access the requested profile.
+      responses:
+        '200': # OK
+          description: The profile for the user matching the ID provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400': # Bad Request
+          $ref: '#/components/responses/BadRequest'
+        '401': # Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '404': # Not found
+          $ref: '#/components/responses/NotFound'
         '500': # Internal Server Error
           $ref: '#/components/responses/InternalServerError'
