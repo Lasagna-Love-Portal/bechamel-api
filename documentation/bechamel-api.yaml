@@ -1,0 +1,72 @@
+openapi: 3.0.0
+info:
+  title: Project Ricotta Bechamel API Proposal
+  description: >+
+    Proposed API - REST API calls and data objects - for the Bechamel API.
+
+    
+    The Bechamel API is used by web and mobile clients to support volunteers, requesters and admininstrators
+    in the Lasagna Love system.
+  version: 0.0.1
+
+paths:
+  /login:
+    post:
+      summary: Authenticates a Lasagna Love user and returns a JSON Web Token (JWT).
+      description: Use the returned JWT token in the Authorization header when making Bechamel API calls, as a Bearer token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':    # status code: OK
+          description: Generated JWT token for the provided username and password
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':    # status code: Bad Request
+          description: Returned when the supplied JSON message body was missing, incomplete or unparsable
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+        '401':    # status code: Unauthorized
+          description: Returned when the supplied user credentials are not valid for the system
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+        '500':    # status code: Internal Server Error
+          description: Returned when the API server encounters
+            an unexpected error attempting to generate a JWT token for the user.
+            Caller may retry the request after an appropriate delay.
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
