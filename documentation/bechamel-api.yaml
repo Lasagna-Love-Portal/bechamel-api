@@ -9,11 +9,89 @@ info:
     in the Lasagna Love system.
   version: 0.0.1
 
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # JSON Web Token
+  schemas:
+    Profile:
+      description: A profile for a user in the Lasagna Love system.
+      type: object
+      properties:
+        ID:
+          type: integer
+          description: ID for this user. Non-mutable, read-only value.
+          example: 1234
+        username:
+          type: string
+          description: Username for the user. This is the value to supply to the authentication API to authenticate the user.
+          example: TheJanitorFromTheMovieUHF
+        password:
+          type: string
+          description: Placeholder for this user's password. Write-only for creating or updating users.
+            A blank string is returned when retrieving a user profile instead of the user's password.
+          example:
+        givenName:
+          type: string
+          description: The given (first) name for a user.
+          example: Stanley
+        middleName:
+          type: string
+          description: The middle name for a user. May be empty.
+          example:
+        familyName:
+          type: string
+          description: The family (last) name for a user.
+          example: Spadowski
+      required:
+        - username
+        - password
+        - givenName
+        - familyName
+
+    ReturnedError:
+      description: Error return type for API operations with error information, when an error occurs during an API call
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+            description: Array of one or more strings describing the error or errors encountered processing the request
+  responses:
+    Unauthorized:
+      description: Access token is missing, invalid or user for supplied token is not authorized to access the API
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReturnedError'
+    BadRequest:
+      description: Returned when a missing or incomplete request body or URI is provided,
+        when one or more required parameters are missing from the provided request body,
+        or when invalid parameters are included in the request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReturnedError'
+    InternalServerError:
+      description: Returned when the API server encounters an unexpected error attempting to process a request.
+        Caller may retry the request after an appropriate delay.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReturnedError'
+
+security:
+  - bearerAuth: []
+
 paths:
   /login:
     post:
       summary: Authenticates a Lasagna Love user and returns a JSON Web Token (JWT).
       description: Use the returned JWT token in the Authorization header when making Bechamel API calls, as a Bearer token.
+      security: []
       requestBody:
         required: true
         content:
@@ -26,7 +104,8 @@ paths:
                 password:
                   type: string
       responses:
-        '200':    # status code: OK
+        # NOTE: the returned responses from this endpoint are intentionally not the shared API responses.
+        '200': # OK
           description: Generated JWT token for the provided username and password
           content:
             application/json:
@@ -35,7 +114,7 @@ paths:
                 properties:
                   token:
                     type: string
-        '400':    # status code: Bad Request
+        '400': # Bad Request
           description: Returned when the supplied JSON message body was missing, incomplete or unparsable
           content:
             application/json:
@@ -46,7 +125,7 @@ paths:
                     type: array
                     items:
                       type: string
-        '401':    # status code: Unauthorized
+        '401': # Unauthorized
           description: Returned when the supplied user credentials are not valid for the system
           content:
             application/json:
@@ -57,9 +136,9 @@ paths:
                     type: array
                     items:
                       type: string
-        '500':    # status code: Internal Server Error
-          description: Returned when the API server encounters
-            an unexpected error attempting to generate a JWT token for the user.
+        '500': # Internal Server Error
+          description: Returned when the API server encounters an unexpected error
+            attempting to generate a JWT token for the user.
             Caller may retry the request after an appropriate delay.
           content:
             application/json:
@@ -70,3 +149,20 @@ paths:
                     type: array
                     items:
                       type: string
+  /profile:
+    get:
+      summary: Returns the profile for the currently logged in user as defined in the supplied JWT
+        Authorization bearer token
+      responses:
+        '200': # OK
+          description: The profile for the user represented by the supplied JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400': # Bad Request
+          $ref: '#/components/responses/BadRequest'
+        '401': # Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '500': # Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
