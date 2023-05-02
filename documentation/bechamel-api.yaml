@@ -7,6 +7,9 @@ info:
     
     The Bechamel API is used by web and mobile clients to support volunteers, requesters and admininstrators
     in the Lasagna Love system.
+
+
+    The API described here is a **PROPOSAL** and is **NOT YET IMPLEMENTED**.
   version: 0.0.1
 
 components:
@@ -24,32 +27,110 @@ components:
           type: integer
           description: ID for this user. Non-mutable, read-only value.
           example: 1234
+        type:
+          type: array
+          items:
+            type: string
+          description: |
+            Array of profile types this user has. Typically this will be one type, either to denote a requester
+            or a volunteer chef. This will contain multiple types for local leaders, regional directors and other admininstrators;
+            and for users who started out as one type of user (a requester or volunteer) but who subsequently has taken on
+            a different role.
+
+            Valid profile type strings -
+            * "requester" - denotes a user who is a requester to Lasagna Love for meals or other types or requests
+            * "chef" - denotes a user who is volunteer chef for Lasagna Love
+            * "leader" - denotes a user who is a local leader for Lasagna Love. Local leaders coordinate volunteers and requests for a given Lasagna Love service area.
+            * "director" - denotes a user who is a regional director for Lasagna Love. Regional directors coordinate the volunteers, requests and local leaders for multiple Lasagna Love service areas in a region.
+            * "admin" - denotes a user who is a Lasagna Love system admininstrator.
+            * "superadmin" - denotes a user who is a Lasagna Love system super admininstrator.
+            * "service" - denotes a service account. This is a special user type for internal system operations.
+          example: ["chef"]
         username:
           type: string
           description: Username for the user. This is the value to supply to the authentication API to authenticate the user.
-          example: TheJanitorFromTheMovieUHF
+          example: UHFStationOwner
         password:
           type: string
           description: Placeholder for this user's password. Write-only for creating or updating users.
             A blank string is returned when retrieving a user profile instead of the user's password.
-          example:
+          example: ""
+        email:
+          type: string
+          description: Email address for this user. This email address will be the address used to communicate with the user,
+            to send password reset requests to, and for other Lasagna Love purposes.
+          example: georgenewman@example.com
         givenName:
           type: string
           description: The given (first) name for a user.
-          example: Stanley
+          example: George
         middleName:
           type: string
           description: The middle name for a user. May be empty.
-          example:
+          example: ""
         familyName:
           type: string
           description: The family (last) name for a user.
-          example: Spadowski
+          example: Newman
+        streetAddress:
+          type: array
+          items:
+            type: string
+          description: Array of postal address lines. At least one is required for an address.
+            Second and subsequent lines are typically used for apartment or unit numbers, floor numbers or other qualifiers.
+          example: ["5400 West Edison St.", "1st Floor"]
+        city:
+          type: string
+          description: The city the user resides in
+          example: Tulsa
+        region:
+          type: string
+          description: The abbreviated version of the state, province or territory the user resides in.
+
+
+            United States - this is the two letter abbreviation of the state or area, e.g. DE for Delaware, DC for Washington DC
+
+
+            Canada - this is the two letter abbreviation of the province, e.g. AB for Alberta
+
+
+            Australia - this is the three letter abbreviation of the territory, e.g. NSA for New South Wales
+          example: OK
+        postcode:
+          type: string
+          description: The postal code the user resides in.
+
+
+            United States - this is the 5 digit ZIP code or 5+4 digit ZIP+4 code in `#####-####` format
+
+
+            Canada - this is the 6 letter + digit postal code, without spaces
+
+
+            Australia - this is 4 digit postal code
+          example: 74127
+        active:
+          type: boolean
+          description: Denotes whether this user is active (true) or inactive (false).
+            Inactive users are not allowed to login and are not used for matching.
+          default: true
+          example: true
+        paused:
+          type: boolean
+          description: Denotes whether this user is eligible to be matched to requests if a chef (false), or is paused from matching (true).
+            Paused users will not be matched to requests while paused.
+          default: false
+          example: false
       required:
+        - type
         - username
         - password
+        - email
         - givenName
         - familyName
+        - streetAddress
+        - region
+        - postcode
     ReturnedError:
       description: Error return type for API operations with error information, when an error occurs during an API call
       type: object
