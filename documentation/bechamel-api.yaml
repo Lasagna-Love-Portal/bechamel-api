@@ -671,10 +671,6 @@ paths:
       responses:
         '204': # No content
           description: User profile was successfully updated.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Profile'
         '400': # Bad Request
           $ref: '#/components/responses/BadRequest'
         '401': # Unauthorized
@@ -768,10 +764,6 @@ paths:
       responses:
         '204': # No content
           description: User profile was successfully updated.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Profile'
         '400': # Bad Request
           $ref: '#/components/responses/BadRequest'
         '401': # Unauthorized
@@ -846,7 +838,7 @@ paths:
         in the provided JSON body to the value provided.
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
-        **ID, creationTime and lastUpdatedTime values cannot be changed. A request specifying one of these fields will be rejected.**
+        **ID, creationTime and lastUpdateTime values cannot be changed. A request specifying one of these fields will be rejected.**
       requestBody:
         description: |
           The updates to apply to the most recent active Request made by the user specified by the provided JWT login.
@@ -870,10 +862,6 @@ paths:
       responses:
         '204': # No content
           description: Most recent active request for the user was successfully updated.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Request'
         '400': # Bad Request
           $ref: '#/components/responses/BadRequest'
         '401': # Unauthorized
@@ -910,7 +898,7 @@ paths:
         Updates the most recent active Request for the user specified by the provided JWT token, changing all mutable values
         to the values provided. Returns the updated Request.
 
-        **ID, creationTime and lastUpdatedTime values cannot be changed and will be ignored if speficied.**
+        **ID, creationTime and lastUpdateTime values cannot be changed and will be ignored if speficied.**
       requestBody:
         description: The updated Request in its full state.
         required: true
@@ -929,5 +917,86 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401': # Unauthorized
           $ref: '#/components/responses/Unauthorized'
+        '500': # Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
+
+  /request/{id}:
+    get:
+      summary: Returns the Request specified by the supplied ID. The logged in user must have sufficient permission to access the specified Request.
+      responses:
+        '200': # OK
+          description: The Request matching the ID provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '400': # Bad Request
+          $ref: '#/components/responses/BadRequest'
+        '401': # Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '404': # Not found
+          $ref: '#/components/responses/NotFound'
+        '500': # Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Updates the Request specified by the supplied ID with the values specified in the provided JSON body.
+        The logged in user must have sufficient permission to update the specified Request.
+      description: |
+        Updates the Request specified by the provided ID, changing every specified field in the provided JSON body to the value provided.
+
+        Do **NOT** specify null or empty values unless intending to remove the value for a field.
+        **ID, creationTime, and lastUpdateTime values cannot be changed. A request specifying one of these fields will be rejected.**
+      requestBody:
+        description: |
+          The profile updates to apply to the specified Request. These should be specified in JSON
+          as a collection of key and value pairs - each representing a field name to change and the new value to apply.
+
+          Values listed in the Request schema as required are not required for PATCH requests - **ONLY** fields
+          to update should be provided.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request'
+            example:
+              { "stage" : "matched" }
+      responses:
+        '204': # No content
+          description: Request was successfully updated.
+        '400': # Bad Request
+          $ref: '#/components/responses/BadRequest'
+        '401': # Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '404': # Not found
+          $ref: '#/components/responses/NotFound'
+        '500': # Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Updates the Request specified by the supplied ID.
+        The logged in user must have sufficient permission to update the specified Request.
+      description: |
+        Updates the Request specified by the provided ID, changing all mutable values to the values provided. Returns the updated Request.
+
+        **ID, creationTime and lastUpdateTime values cannot be changed and will be ignored if speficied.**
+      requestBody:
+        description: The updated Request in full.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request'
+      responses:
+        '200': # OK
+          description: Returns the updated Request in the repsonse body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '400': # Bad Request
+          $ref: '#/components/responses/BadRequest'
+        '401': # Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '404': # Not found
+          $ref: '#/components/responses/NotFound'
         '500': # Internal Server Error
           $ref: '#/components/responses/InternalServerError'
