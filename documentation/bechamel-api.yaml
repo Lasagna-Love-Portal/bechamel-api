@@ -228,14 +228,14 @@ components:
           type: string
           description: If the paused value for the profile is true, this is a date to indicate when the user may be un-paused. This should be a date string in ISO 8601 extended format, "YYYY-MM-DD"
           default: ""
-        requesterInfo:
+        recipientInfo:
           description: If this user has made a request to Lasagna Love - e.g. is a past or current requester - this will contain
-            information about the user as a requester as collected from the user's request, and as amended / updated periodically
+            information about the user as a recipient as collected from the user's request, and as amended / updated periodically
             by subsequent requests from the user.
 
 
             An empty object is to be used and expected when a user is not a requester, e.g. the user's type entry does not contain "requester" as a value.
-          $ref: '#/components/schemas/RequesterInfo'
+          $ref: '#/components/schemas/RecipientInfo'
         volunteerInfo:
           description: If this user is a volunteer for Lasagna Love, this will contain information about the user as a volunteer
             as collected from the user at the time they signed up to volunteer, and as amended / updated by the user periodically
@@ -390,8 +390,8 @@ components:
         - nonBinary
         - preferNotToSay
       default: "preferNotToSay"
-    RequesterInfo:
-      description: Information pertaining to Lasagna Love requesters
+    RecipientInfo:
+      description: Information pertaining to Lasagna Love meal request recipients
       type: object
       required:
         - adultCount
@@ -826,6 +826,44 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Profile'
+            example:
+              type: ["chef"]
+              username: UHFStationOwner
+              password: PasswordForTheUser
+              email: georgenewman@example.com
+              emailValidated: false
+              givenName: George
+              familyName: Newman
+              streetAddress: [
+                "5400 West Edison St.",
+                "1st Floor"
+              ]
+              city: Tulsa
+              region: OK
+              postcode: 74127
+              homePhone: (02) 1234 5678
+              mobilePhone: +1 312 555-1212
+              mobileContactPermission: true
+              newsUpdatesPermission: true
+              active: true
+              paused: false
+              volunteerInfo:
+                birthday: 1990-01-25
+                genderIdentity: preferNotToSay
+                maxTravelDistance: 10
+                allowableDietaryRestrictions: ["vegetarian"]
+                accomodatesExtraRequests: false
+                showCompletedRequests: false
+                availableSchedule: [
+                  "2023-04-30 2023-05-06 1",
+                  "2023-05-07 2023-05-13 1"
+                ]
+              attestations:
+                userIsEighteen: true
+                userAcceptedEmailCommunications: true
+                volunteerAcceptedIndemnityWaiver: 2021-04-11T07:11:04.332Z
+                volunteerAcceptedVolunteerTerms: 2021-04-11T07:11:04.332Z
+                volunteerCompletedSafetyTraining: 2021-04-11T07:11:04.332Z
       responses:
         # The return of the created Profile instead of just a Location header return is intentional here,
         # as many users of the Lasagna Love system will not have sufficient access to request a profile by ID
@@ -957,6 +995,36 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Profile'
+            example:
+              type: ["recipient"]
+              username: UHFStationOwner
+              password: PasswordForTheUser
+              email: georgenewman@example.com
+              emailValidated: false
+              givenName: George
+              familyName: Newman
+              streetAddress: [
+                "5400 West Edison St.",
+                "1st Floor"
+              ]
+              city: Tulsa
+              region: OK
+              postcode: 74127
+              homePhone: (02) 1234 5678
+              mobilePhone: +1 312 555-1212
+              mobileContactPermission: true
+              newsUpdatesPermission: true
+              active: true
+              paused: false
+              recipientInfo:
+                adultCount: 3
+                childCount: 1
+              attestations:
+                userIsEighteen: true
+                userAcceptedEmailCommunications: true
+                volunteerAcceptedIndemnityWaiver: 2021-04-11T07:11:04.332Z
+                volunteerAcceptedVolunteerTerms: 2021-04-11T07:11:04.332Z
+                volunteerCompletedSafetyTraining: 2021-04-11T07:11:04.332Z
       responses:
         '200': # OK
           description: Returns the updated user profile in the repsonse body.
