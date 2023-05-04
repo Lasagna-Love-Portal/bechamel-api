@@ -178,6 +178,50 @@ components:
         attestations:
           $ref: '#/components/schemas/Attestations'
 
+    Match:
+      description: Represents a match between a volunteer and a requester's request.
+      type: object
+      properties:
+        ID:
+          type: integer
+          description: ID for this match. Non-mutable, read-only value with no guaranteed semantics.
+          readOnly: true
+          example: 4787734534
+        requestID:
+          type: integer
+          description: the ID of the Request that this Match pertains to.
+          example: 4666333
+        requesterID:
+          type: integer
+          description: |
+            The ID of the Profile for the user who made this request.
+            **NOTE**: this is an optimization as this could be retrieved from the Request; is it a worthwhile optimization?
+          readOnly: true
+          example: 1234
+        recipientID:
+          type: integer
+          description: |
+            The ID of the Profile for the intended recipient of the Request.
+            **NOTE**: this is an optimization as this could be retrieved from the Request; is it a worthwhile optimization?
+          readOnly: true
+          example: 13466
+        volunteerID:
+          type: integer
+          description: The ID of the volunteer user who has been matched to the request referenced by this match.
+          example: 44445
+        creationTime:
+          type: string
+          description: An ISO 8601 simplified extended format date and time string denoting the date and time
+            this profile was created. Non-mutable, read-only value.
+          readOnly: true
+          example: "2021-04-11T07:11:04.332Z"
+        lastUpdateTime:
+          type: string
+          description: An ISO 8601 simplified extended format date and time string denoting the date and time
+            this profile was most recently updated. Non-mutable, read-only value.
+          readOnly: true
+          example: "2022-09-12T11:38:00.000Z"
+
     Profile:
       description: A profile for a user in the Lasagna Love system.
       type: object
@@ -538,6 +582,138 @@ paths:
                     type: array
                     items:
                       type: string
+  /match:
+    post:
+      summary: Makes a new match in the Lasagna Love system
+      requestBody:
+        description: |
+          Information about the new match to create.
+
+          The requesterID and recipientID will be filled in from the request in the requestID and should not be supplied.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Match'
+      responses:
+        # The return of the created Match instead of just a Location header return is intentional here,
+        # as many users of the Lasagna Love system will not have sufficient access to request a Match by ID
+        '201': # Created
+          description: Returns the newly created Match in the repsonse body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+        '400': # Bad Request
+          $ref: '#/components/responses/BadRequest'
+        '401': # Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '500': # Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
+
+  /match/{id}:
+    get:
+      summary: Returns the Match specified by the supplied ID.
+        The logged in user must have sufficient permission to access the requested Match
+      responses:
+        '200': # OK
+          description: The Match with the ID specified in the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+        '400': # Bad Request
+          $ref: '#/components/responses/BadRequest'
+        '401': # Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '404': # Not found
+          $ref: '#/components/responses/NotFound'
+        '500': # Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Updates the Match's specified fields with the values specified in the provided JSON body
+      description: |
+        Updates the Match with the ID specified, changing every specified field in the provided JSON body to the value provided.
+
+        Do **NOT** specify null or empty values unless intending to remove the value for a field.
+        **ID, creationTime, lastUpdateTime, recipientID, and requesterID values cannot be changed. A request specifying one of these fields will be rejected.**
+      requestBody:
+        description: |
+          The Match updates to apply. These should be specified in JSON as a collection of key and value pairs -
+            each representing a field name to change and the new value to apply.
+
+          Values listed in the Match schema as required are not required for PATCH requests - **ONLY** fields
+          to update should be provided.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Match'
+            example:
+              { "volunteerID" : 45678 }
+      responses:
+        '204': # No content
+          description: Match was successfully updated.
+        '400': # Bad Request
+          $ref: '#/components/responses/BadRequest'
+        '401': # Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '500': # Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
+
+  /matches:
+    get:
+      summary: Returns an array of open matches for the currently logged in user, or an array of open matches from a query string
+      description: By default, returns an array of 0 or more Matches containing the open matches
+        for the user specified in the supplied JWT Authorization bearer token.
+        When query parameters are used, returns an array of 0 or more Matches from the collection of Matches
+        accessible to the user specified in the supplied JWT token and modified by the supplied parameters.
+      parameters:
+        - in: query
+          name: scope
+          required: false
+          schema:
+            type: string
+            description: specifies the search scope for Matches to return. Will return all the Matches that are visible to the requesting user
+              in the specified scope. When "all" is specified, returns all Matches that the user can access.
+              For example, a local leader specifying scope=all will receive all Matches for Requests in their assigned districts,
+              and a regional director specifying scope=all will receive all Matches for Requests in their Super Region.
+              If this parameter is not specified, then only the current user's matches will be returned.
+            enum: ["user", "district", "region", "all"]
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            description: |
+              The status of the Matches to return, as designated and simplified from the Request in the match -
+              or Matches of all statuses if "all" is specified. Multiple values may be specified, separated by commas.
+              Valid values are:
+
+              * open: matches that have been made but have not yet been delivered by a volunteer.
+                Matches with requests of status "matched", "contacted", or "scheduled"
+              * delivered: matches with requests of status "delivered"
+              * stalled: matches with requests of status "noResponse"
+              * cancelled: matches with requests of status "noLongerWants"
+              * all: matches with Requests containing any status
+            enum: ["open", "delivered", "cancelled", "all"]
+      responses:
+        '200': # OK
+          description: Array of open matches for the user represented by the supplied JWT token, or as specified by the query parameters.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    $ref: '#/components/schemas/Match'
+        '400': # Bad Request
+          $ref: '#/components/responses/BadRequest'
+        '401': # Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '404': # Not found
+          $ref: '#/components/responses/NotFound'
+        '500': # Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
 
   /profile:
     get:
@@ -615,7 +791,7 @@ paths:
         to the values provided. Returns the updated user profile.
 
         **Passwords cannot be changed with this method and will be ignored if specified. The PATCH method must be used to change passwords.**
-        **ID and creationDate values cannot be changed and will be ignored if speficied.**
+        **ID and creationTime and lastUpdateTime values cannot be changed and will be ignored if speficied.**
       requestBody:
         description: The updated profile to apply to this user.
         required: true
@@ -647,7 +823,7 @@ paths:
           providing the updated volunteerInfo.attestations.volunteerCompletedSafetyTraining field and value only.
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
-        **ID and creationDate values cannot be changed. A request specifying one of these fields will be rejected.**
+        **ID, creationTime and lastUpdateTime values cannot be changed. A request specifying one of these fields will be rejected.**
       requestBody:
         description: |
           The profile updates to apply to the current user profile. These should be specified in JSON
@@ -705,7 +881,7 @@ paths:
         to the values provided. Returns the updated user profile.
 
         **Passwords cannot be changed with this method and will be ignored if specified. The PATCH method must be used to change passwords.**
-        **ID and creationDate values cannot be changed and will be ignored if speficied.**
+        **ID, creationTime and lastUpdateTime values cannot be changed and will be ignored if speficied.**
       requestBody:
         description: The updated profile to apply to this user.
         required: true
@@ -740,7 +916,7 @@ paths:
           provide the updated volunteerInfo.attestations.volunteerCompletedSafetyTraining value key and value only.
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
-        **ID and creationDate values cannot be changed. A request specifying one of these fields will be rejected.**
+        **ID, creationTime and lastUpdateTime values cannot be changed. A request specifying one of these fields will be rejected.**
       requestBody:
         description: |
           The profile updates to apply to the current user profile. These should be specified in JSON
