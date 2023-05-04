@@ -525,6 +525,8 @@ paths:
       summary: Authenticates a Lasagna Love user and returns a JSON Web Token (JWT).
       description: Use the returned JWT token in the Authorization header when making Bechamel API calls, as a Bearer token.
       security: []
+      tags:
+      - User login and authentication
       requestBody:
         required: true
         content:
@@ -582,9 +584,12 @@ paths:
                     type: array
                     items:
                       type: string
+
   /match:
     post:
       summary: Makes a new match in the Lasagna Love system
+      tags:
+      - Matches and match-related
       requestBody:
         description: |
           Information about the new match to create.
@@ -615,6 +620,8 @@ paths:
     get:
       summary: Returns the Match specified by the supplied ID.
         The logged in user must have sufficient permission to access the requested Match
+      tags:
+      - Matches and match-related
       responses:
         '200': # OK
           description: The Match with the ID specified in the request
@@ -637,6 +644,8 @@ paths:
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
         **ID, creationTime, lastUpdateTime, recipientID, and requesterID values cannot be changed. A request specifying one of these fields will be rejected.**
+      tags:
+      - Matches and match-related
       requestBody:
         description: |
           The Match updates to apply. These should be specified in JSON as a collection of key and value pairs -
@@ -668,6 +677,8 @@ paths:
         for the user specified in the supplied JWT Authorization bearer token.
         When query parameters are used, returns an array of 0 or more Matches from the collection of Matches
         accessible to the user specified in the supplied JWT token and modified by the supplied parameters.
+      tags:
+      - Matches and match-related
       parameters:
         - in: query
           name: scope
@@ -721,6 +732,8 @@ paths:
       description: By default, returns the profile for the user specified in the supplied JWT Authorization bearer token.
         When query parameters are used, returns an array of 0 or more profiles from the collection of profiles
         accessible to the user specified in the supplied JWT token and modified by the supplied parameters.
+      tags:
+      - User (requester, volunteer and administrator) profiles
       parameters:
         - in: query
           name: type
@@ -760,8 +773,53 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500': # Internal Server Error
           $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Updates the current user's specified profile fields with the values specified in the provided JSON body
+      description: |
+        Updates the profile for the user specified by the provided JWT token, changing every specified field
+        in the provided JSON body to the value provided.
+
+        For embedded JSON objects, only the fields to update in those objects should be specified.
+        *Example:* once a user watches the food safety training video, their profile can be updated to reflect this by
+          providing the updated volunteerInfo.attestations.volunteerCompletedSafetyTraining field and value only.
+
+        Do **NOT** specify null or empty values unless intending to remove the value for a field.
+        **ID, creationTime and lastUpdateTime values cannot be changed. A request specifying one of these fields will be rejected.**
+      tags:
+      - User (requester, volunteer and administrator) profiles
+      requestBody:
+        description: |
+          The profile updates to apply to the current user profile. These should be specified in JSON
+          as a collection of key and value pairs - each representing a field name to change and the new value to apply.
+
+          Values listed in the Profile schema as required are not required for PATCH requests - **ONLY** fields
+          to update should be provided.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+            example:
+              { "password" : "new password",
+                "volunteerInfo" : {
+                  "attestations" : {
+                    "volunteerCompletedSafetyTraining" : "2023-05-01"
+                  }
+                }
+              }
+      responses:
+        '204': # No content
+          description: User profile was successfully updated.
+        '400': # Bad Request
+          $ref: '#/components/responses/BadRequest'
+        '401': # Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '500': # Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
     post:
       summary: Add a new user profile to the system
+      tags:
+      - User (requester, volunteer and administrator) profiles
       requestBody:
         description: Information about the new user to add
         required: true
@@ -792,6 +850,8 @@ paths:
 
         **Passwords cannot be changed with this method and will be ignored if specified. The PATCH method must be used to change passwords.**
         **ID and creationTime and lastUpdateTime values cannot be changed and will be ignored if speficied.**
+      tags:
+      - User (requester, volunteer and administrator) profiles
       requestBody:
         description: The updated profile to apply to this user.
         required: true
@@ -806,47 +866,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Profile'
-        '400': # Bad Request
-          $ref: '#/components/responses/BadRequest'
-        '401': # Unauthorized
-          $ref: '#/components/responses/Unauthorized'
-        '500': # Internal Server Error
-          $ref: '#/components/responses/InternalServerError'
-    patch:
-      summary: Updates the current user's specified profile fields with the values specified in the provided JSON body
-      description: |
-        Updates the profile for the user specified by the provided JWT token, changing every specified field
-        in the provided JSON body to the value provided.
-
-        For embedded JSON objects, only the fields to update in those objects should be specified.
-        *Example:* once a user watches the food safety training video, their profile can be updated to reflect this by
-          providing the updated volunteerInfo.attestations.volunteerCompletedSafetyTraining field and value only.
-
-        Do **NOT** specify null or empty values unless intending to remove the value for a field.
-        **ID, creationTime and lastUpdateTime values cannot be changed. A request specifying one of these fields will be rejected.**
-      requestBody:
-        description: |
-          The profile updates to apply to the current user profile. These should be specified in JSON
-          as a collection of key and value pairs - each representing a field name to change and the new value to apply.
-
-          Values listed in the Profile schema as required are not required for PATCH requests - **ONLY** fields
-          to update should be provided.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Profile'
-            example:
-              { "password" : "new password",
-                "volunteerInfo" : {
-                  "attestations" : {
-                    "volunteerCompletedSafetyTraining" : "2023-05-01"
-                  }
-                }
-              }
-      responses:
-        '204': # No content
-          description: User profile was successfully updated.
         '400': # Bad Request
           $ref: '#/components/responses/BadRequest'
         '401': # Unauthorized
@@ -858,40 +877,11 @@ paths:
     get:
       summary: Returns the profile for the user specified by the supplied ID.
         The logged in user must have sufficient permission to access the requested profile.
+      tags:
+      - User (requester, volunteer and administrator) profiles
       responses:
         '200': # OK
           description: The profile for the user matching the ID provided.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Profile'
-        '400': # Bad Request
-          $ref: '#/components/responses/BadRequest'
-        '401': # Unauthorized
-          $ref: '#/components/responses/Unauthorized'
-        '404': # Not found
-          $ref: '#/components/responses/NotFound'
-        '500': # Internal Server Error
-          $ref: '#/components/responses/InternalServerError'
-    put:
-      summary: Updates the profile for the user specified by the supplied ID.
-        The logged in user must have sufficient permission to update the requested profile.
-      description: |
-        Updates the profile for the user specified by the provided ID, changing all mutable non-password values
-        to the values provided. Returns the updated user profile.
-
-        **Passwords cannot be changed with this method and will be ignored if specified. The PATCH method must be used to change passwords.**
-        **ID, creationTime and lastUpdateTime values cannot be changed and will be ignored if speficied.**
-      requestBody:
-        description: The updated profile to apply to this user.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Profile'
-      responses:
-        '200': # OK
-          description: Returns the updated user profile in the repsonse body.
           content:
             application/json:
               schema:
@@ -917,6 +907,8 @@ paths:
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
         **ID, creationTime and lastUpdateTime values cannot be changed. A request specifying one of these fields will be rejected.**
+      tags:
+      - User (requester, volunteer and administrator) profiles
       requestBody:
         description: |
           The profile updates to apply to the current user profile. These should be specified in JSON
@@ -948,6 +940,39 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500': # Internal Server Error
           $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Updates the profile for the user specified by the supplied ID.
+        The logged in user must have sufficient permission to update the requested profile.
+      description: |
+        Updates the profile for the user specified by the provided ID, changing all mutable non-password values
+        to the values provided. Returns the updated user profile.
+
+        **Passwords cannot be changed with this method and will be ignored if specified. The PATCH method must be used to change passwords.**
+        **ID, creationTime and lastUpdateTime values cannot be changed and will be ignored if speficied.**
+      tags:
+      - User (requester, volunteer and administrator) profiles
+      requestBody:
+        description: The updated profile to apply to this user.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      responses:
+        '200': # OK
+          description: Returns the updated user profile in the repsonse body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400': # Bad Request
+          $ref: '#/components/responses/BadRequest'
+        '401': # Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '404': # Not found
+          $ref: '#/components/responses/NotFound'
+        '500': # Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
 
   /request:
     get:
@@ -958,6 +983,8 @@ paths:
         this should represent all open requests in the default state.
         When query parameters are used, returns an array of 0 or more requests from the collection of requests
         accessible to the user specified in the supplied JWT token and modified by the supplied parameters.
+      tags:
+      - Meal requests
       parameters:
         - in: query
           name: scope
@@ -1015,6 +1042,8 @@ paths:
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
         **ID, creationTime and lastUpdateTime values cannot be changed. A request specifying one of these fields will be rejected.**
+      tags:
+      - Meal requests
       requestBody:
         description: |
           The updates to apply to the most recent active Request made by the user specified by the provided JWT login.
@@ -1046,6 +1075,8 @@ paths:
           $ref: '#/components/responses/InternalServerError'
     post:
       summary: Creates a new request for the currently logged in user.
+      tags:
+      - Meal requests
       requestBody:
         description: Information about the new request to add.
         required: true
@@ -1075,6 +1106,8 @@ paths:
         to the values provided. Returns the updated Request.
 
         **ID, creationTime and lastUpdateTime values cannot be changed and will be ignored if speficied.**
+      tags:
+      - Meal requests
       requestBody:
         description: The updated Request in its full state.
         required: true
@@ -1099,6 +1132,8 @@ paths:
   /request/{id}:
     get:
       summary: Returns the Request specified by the supplied ID. The logged in user must have sufficient permission to access the specified Request.
+      tags:
+      - Meal requests
       responses:
         '200': # OK
           description: The Request matching the ID provided.
@@ -1122,6 +1157,8 @@ paths:
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
         **ID, creationTime, and lastUpdateTime values cannot be changed. A request specifying one of these fields will be rejected.**
+      tags:
+      - Meal requests
       requestBody:
         description: |
           The profile updates to apply to the specified Request. These should be specified in JSON
@@ -1154,6 +1191,8 @@ paths:
         Updates the Request specified by the provided ID, changing all mutable values to the values provided. Returns the updated Request.
 
         **ID, creationTime and lastUpdateTime values cannot be changed and will be ignored if speficied.**
+      tags:
+      - Meal requests
       requestBody:
         description: The updated Request in full.
         required: true
