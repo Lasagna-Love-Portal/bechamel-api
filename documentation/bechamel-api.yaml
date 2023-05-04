@@ -19,165 +19,6 @@ components:
       scheme: bearer
       bearerFormat: JWT # JSON Web Token
   schemas:
-    Attestations:
-      description: A list of attestations that a user has made to Lasagana Love, either during their signup process
-        or afterwards. Some of these are simple yes/no attestations, some are date-based to track currency.
-      type: object
-      properties:
-        userIsEighteen:
-          type: boolean
-          description: true indicates user attests they are 18 years of age or older.
-            If false, user should not be allowed to make requests, receive requests nor to volunteer.
-        userAcceptedEmailCommunications:
-          type: boolean
-          description: true indicates user grants permission for Lasagna Love to contact the user for the purposes
-            of servicing meal or other volunteer requests, and for user account and system purposes.
-            If false, user should not be allowed to make requests, receive requests nor to volunteer.
-            This permission is only for required communications.
-        requesterAcceptedLiabilityRelease:
-          type: string
-          description: ISO 8601 simplified extended ISO format date and time string of the date when the user most recently
-            accepted the Lasagana Love food donation waiver and release of liability. Not required for users who are not requesters.
-            If empty, user's requests should not be matched nor be allowed to be manually matched.
-          example: "2021-04-11T07:11:04.332Z"
-        volunteerAcceptedIndemnityWaiver:
-          type: string
-          description: ISO 8601 simplified extended ISO format date and time string of the date when the user most recently
-            accepted the Lasagana Love volunteer waiver of indemnity. Not required for users who are not volunteers.
-            If empty, user should not be matched to requests nor be allowed to be manually matched.
-          example: "2021-04-11T07:11:04.332Z"
-        volunteerAcceptedVolunteerTerms:
-          type: string
-          description: ISO 8601 simplified extended ISO format date and time string of the date when the user most recently
-            accepted the Lasagna Love volunteer terms and conditions. Not requred for users who are not volunteers.
-            If empty, user should not be matched to requests nor be allowed to be manually matched.
-          example: "2021-04-11T07:11:04.332Z"
-        volunteerCompletedSafetyTraining:
-          type: string
-          description: ISO 8601 simplified extended ISO format date and time string of the date when the user most recently
-            attested that they viewed the Lasagna Love required food safety video. Not requred for users who are not volunteers.
-            If empty, user should not be matched to requests nor be allowed to be manually matched.
-          example: "2021-04-11T07:11:04.332Z"
-    GenderIdentity:
-      description: A list of gender identities that volunteers may indicate for their Lasagna Love profile.
-      type: string
-      enum:
-        - female
-        - male
-        - nonBinary
-        - preferNotToSay
-      default: "preferNotToSay"
-    DietaryRestrictions:
-      description: A list of different types of food allergies, dietary restrictions or preferences
-        which a requester may indicate the recipient has, and that volunteer chefs may indicate they can accomodate.
-      type: array
-      items:
-        type: string
-        description: |
-          Array of types of food allergies expressed as string values. These values may include:
-          * "vegetarian" - denotes that no meat is to be used for a meal request
-          * "vegan" - denotes that no animal products are to be used for a meal request
-          * "dairyFree" - denotes that no dairy or lactose-bearing products are to be used for a meal request
-          * "glutenFree" - denotes that no gluten-containing products (e.g. wheat, wheat flour) are to be used for a meal request
-          * "nutAllergy" - denotes that no tree nuts or peanuts are to be used for a meal request
-          * "otherRestrictions" - denotes that there are additional restrictions on a per-request basis to accomodate for meal requests
-
-          This may an empty array. For a request, an empty array denotes that no dietary restrictions were indicated. For a volunteer chef,
-          an empty array denotes that the volunteer is not able or comfortable accomodating any dietary restrictions.
-        enum:
-          - vegetarian
-          - vegan
-          - dairyFree
-          - glutenFree
-          - nutAllergy
-          - otherRestrictions
-    RequesterInfo:
-      description: Information pertaining to Lasagna Love requesters
-      type: object
-      required:
-        - adultCount
-      properties:
-        adultCount:
-          type: integer
-          description: The number of adults in the requester's household.
-          example: 5
-        childCount:
-          type: integer
-          description: The number of children in the requester's household.
-          example: 1
-        dietaryRestrictions:
-          $ref: '#/components/schemas/DietaryRestrictions'
-          example: ["vegan"]
-    VolunteerInfo:
-      description: Information pertaining to Lasagna Love volunteers, whether volunteer chefs or other types of volunteers
-      type: object
-      required:
-        - maxTravelDistance
-      properties:
-        birthday:
-          type: string
-          description: An ISO 8601 format date string indicating the volunteer's birthday. This should only include the date,
-            in YYYY-MM-DD format.
-          example: "1990-01-25"
-          default: ""
-        genderIdentity:
-          $ref: '#/components/schemas/GenderIdentity'
-        volunteeringWith:
-          type: string
-          description: Free-form string indicating organization, group or other people this volunteer is volunteering with.
-          example: "Channel U-62"
-          default: ""
-        employer:
-          type: string
-          description: The volunteer's employer. Lasagna Love leaders may use this information if provided to reach out
-            or assist the volunteer in reaching out to the employer to determine possible volunteer effort or fund matching opportunities.
-          default: ""
-        facebookName:
-          type: string
-          description: The volunteer's Facebook profile name.
-          default: ""
-        maxTravelDistance:
-          type: integer
-          description: |
-            The maximum distance the volunteer is willing to travel to fulfill requests.
-            For US-based volunteers, this is expressed in miles from their address to the recipient.
-            For Australia and Canada based volunteers, this is expressed in kilometers from their address to the recipient.
-            ** NOTE: travel distance is calculated differently based on different regions.** Most regions calculate using
-              "as the crow flies" distance. Certain regions use actual driving distance as calcuated by a 3rd party map API.
-        allowableDietaryRestrictions:
-          $ref: '#/components/schemas/DietaryRestrictions'
-          example: ["vegetarian", "nonDairy", "nutAllergy"]
-        accomodatesExtraRequests:
-          description: true if the volunteer is willing to be contacted for extra requests outside of their indicated schedule,
-            false if the volunteer is unwilling.
-          type: boolean
-          default: false
-        showCompletedRequests:
-          description: true if the volunteer wishes to see completed and uncompleted requests by default when viewing matches,
-            false indicates only uncompleted (open) matches should be shown by default
-          type: boolean
-          default: false
-        availableSchedule:
-          type: array
-          description: |
-            The volunteer's scheduled availability to fulfill requests.
-            An empty array indicates no availablity, but it is recommended to pause a volunteer rather than providing an empty
-            availableSchedule to indicate lack of availability.
-
-            **This schedule format is VERY LIKELY to change format**
-          items:
-            type: string
-            description: |
-              Each string denotes an availability region in the following form "YYYY-MM-DD YYYY-MM-DD \#", where
-              * the first part is an ISO 8601 format date string specifying the first day of the availability period
-              * the second part is an ISO 8601 format date string specifying the last day, inclusive, of the availability period
-              * the third part is a non-negative integer specifying the number of requests that may be fulfilled.
-                This may be 0 to indicate no availability though this is not recommended.
-                Large requests, for example meal requests for large parties, may be considered as multiple requests by the matching system.
-          example: ["2023-04-30 2023-05-06 1", "2023-05-07 2023-05-13 1"]
-        attestations:
-          $ref: '#/components/schemas/Attestations'
-
     Match:
       description: Represents a match between a volunteer and a requester's request.
       type: object
@@ -477,6 +318,95 @@ components:
       required:
         - stage
 
+    Attestations:
+      description: A list of attestations that a user has made to Lasagana Love, either during their signup process
+        or afterwards. Some of these are simple yes/no attestations, some are date-based to track currency.
+      type: object
+      properties:
+        userIsEighteen:
+          type: boolean
+          description: true indicates user attests they are 18 years of age or older.
+            If false, user should not be allowed to make requests, receive requests nor to volunteer.
+        userAcceptedEmailCommunications:
+          type: boolean
+          description: true indicates user grants permission for Lasagna Love to contact the user for the purposes
+            of servicing meal or other volunteer requests, and for user account and system purposes.
+            If false, user should not be allowed to make requests, receive requests nor to volunteer.
+            This permission is only for required communications.
+        requesterAcceptedLiabilityRelease:
+          type: string
+          description: ISO 8601 simplified extended ISO format date and time string of the date when the user most recently
+            accepted the Lasagana Love food donation waiver and release of liability. Not required for users who are not requesters.
+            If empty, user's requests should not be matched nor be allowed to be manually matched.
+          example: "2021-04-11T07:11:04.332Z"
+        volunteerAcceptedIndemnityWaiver:
+          type: string
+          description: ISO 8601 simplified extended ISO format date and time string of the date when the user most recently
+            accepted the Lasagana Love volunteer waiver of indemnity. Not required for users who are not volunteers.
+            If empty, user should not be matched to requests nor be allowed to be manually matched.
+          example: "2021-04-11T07:11:04.332Z"
+        volunteerAcceptedVolunteerTerms:
+          type: string
+          description: ISO 8601 simplified extended ISO format date and time string of the date when the user most recently
+            accepted the Lasagna Love volunteer terms and conditions. Not requred for users who are not volunteers.
+            If empty, user should not be matched to requests nor be allowed to be manually matched.
+          example: "2021-04-11T07:11:04.332Z"
+        volunteerCompletedSafetyTraining:
+          type: string
+          description: ISO 8601 simplified extended ISO format date and time string of the date when the user most recently
+            attested that they viewed the Lasagna Love required food safety video. Not requred for users who are not volunteers.
+            If empty, user should not be matched to requests nor be allowed to be manually matched.
+          example: "2021-04-11T07:11:04.332Z"
+    DietaryRestrictions:
+      description: A list of different types of food allergies, dietary restrictions or preferences
+        which a requester may indicate the recipient has, and that volunteer chefs may indicate they can accomodate.
+      type: array
+      items:
+        type: string
+        description: |
+          Array of types of food allergies expressed as string values. These values may include:
+          * "vegetarian" - denotes that no meat is to be used for a meal request
+          * "vegan" - denotes that no animal products are to be used for a meal request
+          * "dairyFree" - denotes that no dairy or lactose-bearing products are to be used for a meal request
+          * "glutenFree" - denotes that no gluten-containing products (e.g. wheat, wheat flour) are to be used for a meal request
+          * "nutAllergy" - denotes that no tree nuts or peanuts are to be used for a meal request
+          * "otherRestrictions" - denotes that there are additional restrictions on a per-request basis to accomodate for meal requests
+
+          This may an empty array. For a request, an empty array denotes that no dietary restrictions were indicated. For a volunteer chef,
+          an empty array denotes that the volunteer is not able or comfortable accomodating any dietary restrictions.
+        enum:
+          - vegetarian
+          - vegan
+          - dairyFree
+          - glutenFree
+          - nutAllergy
+          - otherRestrictions
+    GenderIdentity:
+      description: A list of gender identities that volunteers may indicate for their Lasagna Love profile.
+      type: string
+      enum:
+        - female
+        - male
+        - nonBinary
+        - preferNotToSay
+      default: "preferNotToSay"
+    RequesterInfo:
+      description: Information pertaining to Lasagna Love requesters
+      type: object
+      required:
+        - adultCount
+      properties:
+        adultCount:
+          type: integer
+          description: The number of adults in the requester's household.
+          example: 5
+        childCount:
+          type: integer
+          description: The number of children in the requester's household.
+          example: 1
+        dietaryRestrictions:
+          $ref: '#/components/schemas/DietaryRestrictions'
+          example: ["vegan"]
     ReturnedError:
       description: Error return type for API operations with error information, when an error occurs during an API call
       type: object
@@ -486,6 +416,75 @@ components:
           items:
             type: string
             description: Array of one or more strings describing the error or errors encountered processing the request
+    VolunteerInfo:
+      description: Information pertaining to Lasagna Love volunteers, whether volunteer chefs or other types of volunteers
+      type: object
+      required:
+        - maxTravelDistance
+      properties:
+        birthday:
+          type: string
+          description: An ISO 8601 format date string indicating the volunteer's birthday. This should only include the date,
+            in YYYY-MM-DD format.
+          example: "1990-01-25"
+          default: ""
+        genderIdentity:
+          $ref: '#/components/schemas/GenderIdentity'
+        volunteeringWith:
+          type: string
+          description: Free-form string indicating organization, group or other people this volunteer is volunteering with.
+          example: "Channel U-62"
+          default: ""
+        employer:
+          type: string
+          description: The volunteer's employer. Lasagna Love leaders may use this information if provided to reach out
+            or assist the volunteer in reaching out to the employer to determine possible volunteer effort or fund matching opportunities.
+          default: ""
+        facebookName:
+          type: string
+          description: The volunteer's Facebook profile name.
+          default: ""
+        maxTravelDistance:
+          type: integer
+          description: |
+            The maximum distance the volunteer is willing to travel to fulfill requests.
+            For US-based volunteers, this is expressed in miles from their address to the recipient.
+            For Australia and Canada based volunteers, this is expressed in kilometers from their address to the recipient.
+            ** NOTE: travel distance is calculated differently based on different regions.** Most regions calculate using
+              "as the crow flies" distance. Certain regions use actual driving distance as calcuated by a 3rd party map API.
+        allowableDietaryRestrictions:
+          $ref: '#/components/schemas/DietaryRestrictions'
+          example: ["vegetarian", "nonDairy", "nutAllergy"]
+        accomodatesExtraRequests:
+          description: true if the volunteer is willing to be contacted for extra requests outside of their indicated schedule,
+            false if the volunteer is unwilling.
+          type: boolean
+          default: false
+        showCompletedRequests:
+          description: true if the volunteer wishes to see completed and uncompleted requests by default when viewing matches,
+            false indicates only uncompleted (open) matches should be shown by default
+          type: boolean
+          default: false
+        availableSchedule:
+          type: array
+          description: |
+            The volunteer's scheduled availability to fulfill requests.
+            An empty array indicates no availablity, but it is recommended to pause a volunteer rather than providing an empty
+            availableSchedule to indicate lack of availability.
+
+            **This schedule format is VERY LIKELY to change format**
+          items:
+            type: string
+            description: |
+              Each string denotes an availability region in the following form "YYYY-MM-DD YYYY-MM-DD \#", where
+              * the first part is an ISO 8601 format date string specifying the first day of the availability period
+              * the second part is an ISO 8601 format date string specifying the last day, inclusive, of the availability period
+              * the third part is a non-negative integer specifying the number of requests that may be fulfilled.
+                This may be 0 to indicate no availability though this is not recommended.
+                Large requests, for example meal requests for large parties, may be considered as multiple requests by the matching system.
+          example: ["2023-04-30 2023-05-06 1", "2023-05-07 2023-05-13 1"]
+        attestations:
+          $ref: '#/components/schemas/Attestations'
 
   responses:
     BadRequest:
