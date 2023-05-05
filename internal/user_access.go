@@ -1,14 +1,12 @@
 package internal
 
-/*
-   Project Ricotta: Bechamel API
+// Project Ricotta: Bechamel API
+//
+// This is a temporary data source with dummy data.
+// This is here to allow the Bechamel API portion of Project Ricotta to get started.
+// This will be replaced with calls to the Ragu user information service,
+// once that is available.
 
-   This is a temporary data source with dummy data.
-   This is here to allow the Bechamel API portion of Project Ricotta to get started.
-
-   This will be replaced with calls to the Ragu user information service,
-   once that is available.
-*/
 import (
 	"errors"
 	"project-ricotta/bechamel-api/model"

@@ -1,10 +1,8 @@
 package internal
 
-/*
-	Project Ricotta: Bechamel API
-
-	This file contains JWT (JSON Web Token) utility functions for the Bechamel API to use internally.
-*/
+// Project Ricotta: Bechamel API
+//
+//	This file contains JWT (JSON Web Token) utility functions for the Bechamel API to use internally.
 
 import (
 	"errors"
@@ -15,13 +13,16 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-// TODO: get this from environment
+// TODO: get this in a more secure manner not hard-coded in the application.
+// See https://github.com/Lasagna-Love-Portal/bechamel-api/issues/5
 var jwtSigningKey = []byte("GetThisFromENV")
 
 // Number of seconds generated JWT tokens are valid for before expiration
+// TODO: get this from environment or in another fashion that allows runtime configurability
 const JWT_TTL = 600
 
-/* Generates a JWT token for a given userName */
+// Generates a JWT token for a given userName
+
 func GenerateJWT(userName string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userName": userName,
@@ -32,10 +33,9 @@ func GenerateJWT(userName string) (string, error) {
 	return token.SignedString(jwtSigningKey)
 }
 
-/*
-Validates a supplied JWT token and returns the userName for the user
-represented by the token if the token is valid and not expired.
-*/
+// Validates a supplied JWT token and returns the userName for the user
+// represented by the token if the token is valid and not expired.
+
 func verifyJWT(jwtTokenString string) (string, error) {
 	if jwtTokenString == "" {
 		return "", errors.New("jwt token to verify must be non-empty")
@@ -46,7 +46,7 @@ func verifyJWT(jwtTokenString string) (string, error) {
 	})
 	if token == nil || err != nil {
 		// TODO: propogate parsing error from JWT up in a more useful form?
-		return "", errors.New("could not parse supplied JWT token")
+		return "", fmt.Errorf("could not parse supplied JWT: %w", err)
 	}
 
 	if token.Valid {
@@ -66,7 +66,7 @@ func verifyJWT(jwtTokenString string) (string, error) {
 			return "", errors.New("error validating supplied JWT token")
 		}
 	} else {
-		return "", errors.New("could not parse supplied JWT token")
+		return "", fmt.Errorf("could not parse supplied JWT: %w", err)
 	}
 }
 

@@ -49,7 +49,7 @@ func postUserAuthorization(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": jwtToken})
 }
 
-/* TODO: return something more useful for error messages */
+// TODO: return something more useful for error messages
 func getCurrentUserProfile(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 	userProfile, err := internal.GetUserFromAuthHeader(authHeader)
@@ -61,7 +61,7 @@ func getCurrentUserProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, userProfile)
 }
 
-/* TODO: this functionality should only be permitted for users who have a role with permissions */
+// TODO: this functionality should only be permitted for users who have a role with permissions
 func getUserProfileByID(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 	_, err := internal.GetUserFromAuthHeader(authHeader)
@@ -86,14 +86,11 @@ func getUserProfileByID(c *gin.Context) {
 	c.JSON(http.StatusOK, userProfile)
 }
 
-/*
-TODO: should an API key or similar be required to POST a request to create a new user?
+// TODO: should an API key or similar be required to POST a request to create a new user?
+// Possibly API key or a JWT token with a role with suitable permissions?
+// For demonstration and debugging purposes, any authenticated user can make new user profiles
+// at the present time. This is most certainly not what we want to deploy.
 
-Possibly API key or a JWT token with a role with suitable permissions?
-
-For demonstration and debugging purposes, any authenticated user can make new user profiles
-at the present time. This is most certainly not what we want to deploy.
-*/
 func postUserProfile(c *gin.Context) {
 	var newUserProfile model.LasagnaLoveUser
 
