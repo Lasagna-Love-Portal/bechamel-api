@@ -72,17 +72,17 @@ components:
           description: ID for this user. Non-mutable, read-only value with no guaranteed semantics.
           readOnly: true
           example: 1234
-        type:
+        roles:
           type: array
           items:
             type: string
           description: |
-            Array of profile types this user has. Typically this will be one type, either to denote a requester
-            or a volunteer chef. This will contain multiple types for local leaders, regional directors and other admininstrators;
-            and for users who started out as one type of user (a requester or volunteer) but who subsequently has taken on
-            a different role.
+            Array of profile types this user has. Typically this will be one role, either to denote a requester
+            or a volunteer chef. This will contain multiple roles for local leaders, regional directors and other admininstrators;
+            and for users who started out as one role (a requester or volunteer) but who subsequently has taken on
+            a different additional role.
 
-            Valid profile type strings -
+            Valid profile role strings -
             * "requester" - denotes a user who is a requester to Lasagna Love for meals or other types or requests.
             * "recipient" - denotes a user who is the intended recipient for a Lasagna Love request. Many users will be both a requester and recipient.
               However, Lasagna Love does let people make requests (nominations) for others, so some users will only be requesters or recipients.
@@ -95,7 +95,6 @@ components:
               requests and local leaders for multiple Lasagna Love service areas in a region.
             * "admin" - denotes a user who is a Lasagna Love system admininstrator.
             * "superadmin" - denotes a user who is a Lasagna Love system super admininstrator.
-            * "service" - denotes a service account. This is a special user type for internal system operations.
           enum:
             - requester
             - recipient
@@ -165,7 +164,7 @@ components:
           type: string
           description: The city the user resides in
           example: Tulsa
-        region:
+        stateOrProvince:
           type: string
           description: The abbreviated version of the state, province or territory the user resides in.
 
@@ -178,7 +177,7 @@ components:
 
             Australia - this is the three letter abbreviation of the territory, e.g. NSA for New South Wales
           example: OK
-        postcode:
+        postalCode:
           type: string
           description: The postal code the user resides in.
 
