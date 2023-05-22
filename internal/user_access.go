@@ -15,8 +15,8 @@ import (
 )
 
 var lasagnaLoveUsers = []model.LasagnaLoveUser{
-	{UserID: 1, UserName: "TestUser1", Password: "Password1", GivenName: "Test", FamilyName: "UserOne"},
-	{UserID: 2, UserName: "TestUser2", Password: "Password2", GivenName: "Test", FamilyName: "UserTwo"},
+	{ID: 1, Username: "TestUser1", Password: "password1", GivenName: "Test", FamilyName: "UserOne"},
+	{ID: 2, Username: "TestUser2", Password: "password2", GivenName: "Test", FamilyName: "UserTwo"},
 }
 
 func AuthorizeUser(userName string, password string) (model.LasagnaLoveUser, error) {
@@ -25,7 +25,7 @@ func AuthorizeUser(userName string, password string) (model.LasagnaLoveUser, err
 	}
 
 	idx := slices.IndexFunc(lasagnaLoveUsers,
-		func(l model.LasagnaLoveUser) bool { return l.UserName == userName && l.Password == password })
+		func(l model.LasagnaLoveUser) bool { return l.Username == userName && l.Password == password })
 	if idx == -1 {
 		return model.LasagnaLoveUser{}, errors.New("no user with supplied userName and password found")
 	}
@@ -34,7 +34,7 @@ func AuthorizeUser(userName string, password string) (model.LasagnaLoveUser, err
 
 func GetUserByID(userID int) (model.LasagnaLoveUser, error) {
 	idx := slices.IndexFunc(lasagnaLoveUsers,
-		func(l model.LasagnaLoveUser) bool { return l.UserID == userID })
+		func(l model.LasagnaLoveUser) bool { return l.ID == userID })
 	if idx == -1 {
 		return model.LasagnaLoveUser{}, errors.New("no user with supplied userID found")
 	}
@@ -46,7 +46,7 @@ func GetUserByUserName(userName string) (model.LasagnaLoveUser, error) {
 		return model.LasagnaLoveUser{}, errors.New("userName must be non-empty")
 	}
 	idx := slices.IndexFunc(lasagnaLoveUsers,
-		func(l model.LasagnaLoveUser) bool { return l.UserName == userName })
+		func(l model.LasagnaLoveUser) bool { return l.Username == userName })
 	if idx == -1 {
 		return model.LasagnaLoveUser{}, errors.New("no user with supplied userName found")
 	}
@@ -55,17 +55,17 @@ func GetUserByUserName(userName string) (model.LasagnaLoveUser, error) {
 
 func AddNewUser(newUserProfile model.LasagnaLoveUser) (model.LasagnaLoveUser, error) {
 	// Not allowed to specify an userID - error if one is provided
-	if newUserProfile.UserID != 0 {
+	if newUserProfile.ID != 0 {
 		return model.LasagnaLoveUser{}, errors.New("userID may not be specified")
 	}
 
 	// Verify required fields are present. Probably an easier way to do this...
 	if newUserProfile.FamilyName == "" || newUserProfile.GivenName == "" ||
-		newUserProfile.UserName == "" || newUserProfile.Password == "" {
+		newUserProfile.Username == "" || newUserProfile.Password == "" {
 		return model.LasagnaLoveUser{}, errors.New("one or more required fields missing or empty")
 	}
 
-	newUserProfile.UserID = len(lasagnaLoveUsers) + 1
+	newUserProfile.ID = len(lasagnaLoveUsers) + 1
 	lasagnaLoveUsers = append(lasagnaLoveUsers, newUserProfile)
 	return newUserProfile, nil
 }

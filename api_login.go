@@ -20,7 +20,7 @@ func postUserAuthorization(c *gin.Context) {
 		}
 		return
 	}
-	if userAuthorizationBody.UserName == "" {
+	if userAuthorizationBody.Username == "" {
 		errors = append(errors, "Required parameter userName not supplied or empty")
 	}
 	if userAuthorizationBody.Password == "" {
@@ -31,14 +31,15 @@ func postUserAuthorization(c *gin.Context) {
 		return
 	}
 
-	lasagnaLoveUser, err := internal.AuthorizeUser(userAuthorizationBody.UserName, userAuthorizationBody.Password)
+	lasagnaLoveUser, err := internal.AuthorizeUser(userAuthorizationBody.Username,
+		userAuthorizationBody.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized,
 			gin.H{"errors": []string{"Supplied user could not be authorized with supplied password"}})
 		return
 	}
 
-	jwtToken, err := internal.GenerateJWT(lasagnaLoveUser.UserName)
+	jwtToken, err := internal.GenerateJWT(lasagnaLoveUser.Username)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError,
 			gin.H{"errors": []string{"Error generating JWT token for supplied userName and password"}})
