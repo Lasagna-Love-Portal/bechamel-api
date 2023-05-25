@@ -3,12 +3,12 @@ package model
 import "encoding/json"
 
 type LasagnaLoveUser struct {
-	UserID     int    `json:"id"`
-	UserName   string `json:"userName"`
-	Password   string `json:"password"`
-	GivenName  string `json:"givenName"`
-	MiddleName string `json:"middleName"`
-	FamilyName string `json:"familyName"`
+	ID                 int    `json:"id"`
+	Username           string `json:"username"`
+	Password           string `json:"password"`
+	GivenName          string `json:"given_name"`
+	MiddleOrMaidenName string `json:"middle_or_maiden_name"`
+	FamilyName         string `json:"family_name"`
 }
 
 // This overrides the default marshaling of the structure to JSON, removing the password field value.
