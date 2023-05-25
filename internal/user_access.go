@@ -65,6 +65,15 @@ func AddNewUser(newUserProfile model.LasagnaLoveUser) (model.LasagnaLoveUser, er
 		return model.LasagnaLoveUser{}, errors.New("one or more required fields missing or empty")
 	}
 
+	
+	// Verify that the userName is not already in use
+	user, err := GetUserByUserName(newUserProfile.UserName)
+	if err == nil && user.UserName == newUserProfile.UserName {
+		return model.LasagnaLoveUser{}, errors.New("userName already in use")
+}
+
+
+
 	newUserProfile.UserID = len(lasagnaLoveUsers) + 1
 	lasagnaLoveUsers = append(lasagnaLoveUsers, newUserProfile)
 	return newUserProfile, nil
