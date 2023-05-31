@@ -94,7 +94,7 @@ This project is licensed under the terms of the license found in the file [`LICE
 
 ### Contact
 
-For any queries or concerns, please open an issue in the repository or send us a [pecorino-email @lasagnalove](info@lasagnalove.org)
+For any queries or concerns, please open an issue in the repository or send us an [email](info@lasagnalove.org)
 
 ## Acknowledgements
 
