@@ -10,7 +10,7 @@ info:
 
 
     The API described here is a **PROPOSAL** and is **NOT YET IMPLEMENTED**.
-  version: 0.0.2
+  version: 0.0.3
 
 components:
   securitySchemes:
@@ -531,11 +531,15 @@ paths:
           application/json:
             schema:
               type: object
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string
+              oneOf:
+                - properties:
+                    username:
+                      type: string
+                    password:
+                      type: string
+                - properties:
+                    refresh_token:
+                      type: string
       responses:
         # NOTE: the returned responses from this endpoint are intentionally not the shared API responses.
         '200': # ok
@@ -545,7 +549,9 @@ paths:
               schema: 
                 type: object
                 properties:
-                  token:
+                  access_token:
+                    type: string
+                  refresh_token:
                     type: string
         '400': # bad request
           description: Returned when the supplied JSON message body was missing, incomplete or unparsable
