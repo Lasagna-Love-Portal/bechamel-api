@@ -86,33 +86,40 @@ go mod tidy
 ```bash
 go test -v -cover -race -bench . ./...
 ```
-or, 
+
+or,
+
 ```bash
 go test ./...
 ```
+
 ## Inspect which code parts aren't covered by tests
+
 Step 1 - run tests with `-coverprofile` flag
+
 ```bash
 go test -coverprofile=coverage.out ./...
 ```
+
 Coverage Report
+
 ```bash
 go tool cover -html=coverage.out
 ```
+
 ### Contribution
 
-See [project-ricotta](https://github.com/Lasagna-Love-Portal/project-ricotta) for contributor guidelines. Submit a PR for your changes.
+Please see [project-ricotta](https://github.com/Lasagna-Love-Portal/project-ricotta) for more details on contributor guidelines. Contributions are welcomed. Please submit a PR with your changes and they will be reviewed as soon as possible.
 
 For an examples of how to add new tests, see the [a quick testing guide](./documentation/TESTING.md).
 
-
 ### License
 
-This project is licensed under the [`LICENSE`](LICENSE) terms.
+This project is licensed under the terms of the license found in the file [`LICENSE`](LICENSE) in the root directory of this project.
 
 ### Contact
 
-For queries, please open an issue or [email](mailto:info@lasagnalove.org) us.
+For any queries or concerns, please open an [issue](https://github.com/Lasagna-Love-Portal/bechamel-api/issues) in the repository or send us an email: [info@lasagnalove.org](mailto:info@lasagnalove.org)
 
 ## Acknowledgements
 
