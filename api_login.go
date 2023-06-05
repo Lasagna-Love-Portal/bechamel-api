@@ -2,10 +2,11 @@ package main
 
 import (
 	"net/http"
-	"project-ricotta/bechamel-api/internal"
-	"project-ricotta/bechamel-api/model"
 
 	"github.com/gin-gonic/gin"
+
+	"project-ricotta/bechamel-api/internal"
+	"project-ricotta/bechamel-api/model"
 )
 
 func postUserAuthorization(c *gin.Context) {
@@ -27,7 +28,8 @@ func postUserAuthorization(c *gin.Context) {
 			if userAuthorizationBody.Password == "" {
 				errors = append(errors, "Required parameter password not supplied or empty")
 			}
-			lasagnaLoveUser, err := internal.AuthorizeUser(userAuthorizationBody.Username, userAuthorizationBody.Password)
+			var lasagnaLoveUser model.LasagnaLoveUser
+			lasagnaLoveUser, err = internal.AuthorizeUser(userAuthorizationBody.Username, userAuthorizationBody.Password)
 			if err != nil {
 				c.JSON(http.StatusUnauthorized,
 					gin.H{"errors": []string{"Supplied user could not be authorized with supplied password"}})
