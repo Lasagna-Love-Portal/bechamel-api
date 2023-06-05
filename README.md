@@ -22,4 +22,4 @@ For any queries or concerns, please open an [issue](https://github.com/Lasagna-L
 
 ## Acknowledgements
 
-[Lasagna Love ](https://lasagnalove.org/)
+[Lasagna Love](https://lasagnalove.org/)
