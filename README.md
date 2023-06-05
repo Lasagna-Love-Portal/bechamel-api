@@ -8,9 +8,9 @@ For more details on Project Ricotta and our contributor guidelines, please see t
 
 ### Step 1: Install Go (if not already installed)
 
-Download Go from the official website: [https://golang.org/dl/](https://golang.org/dl/)
+Download Go from the official site: [https://golang.org/dl/](https://golang.org/dl/)
 
-For Unix-based systems, you can use package managers:
+Unix-based systems can use package managers:
 
 ```bash
 brew install go # MacOS
@@ -19,7 +19,7 @@ sudo apt-get install golang # Ubuntu, Debian, etc.
 
 ### Step 2: Verify Go Installation
 
-Check your Go installation:
+Confirm your Go installation:
 
 ```bash
 go version
@@ -28,26 +28,24 @@ go version
 ### Step 3: Run
 
 ```bash
-cd path/to/your/project
-go mod download # downloads all dependencies
-go run .  # run all
+cd path/to/project
+go mod download # downloads dependencies
+go run .  # runs all
 ```
 
-It should start a server on `port 8080`. You'll see a message in the terminal:
+This starts a server on `port 8080`. A message appears:
 
 ```bash
 [GIN-debug] Listening and serving HTTP on :8080
 ```
 
-Interact with the server by sending HTTP requests to the endpoints, for example:
+Interact with the server by sending HTTP requests, like:
 
 ```bash
 curl localhost:8080
 ```
 
-Also, you can try opening your web browser and typing `http://localhost:8080` into the address bar.
-
-To stop the server, use `Ctrl+C` in the terminal.
+Try `http://localhost:8080` in your web browser. To stop the server, press `Ctrl+C`.
 
 ### Step 4: Build
 
@@ -55,7 +53,7 @@ To stop the server, use `Ctrl+C` in the terminal.
 go build .
 ```
 
-This will create a binary file in the current directory. You can run it with:
+This creates a binary file. Run it:
 
 ```bash
 ./bechamel-api
@@ -63,38 +61,52 @@ This will create a binary file in the current directory. You can run it with:
 
 ## Troubleshooting
 
-If you encounter any issues, make sure to check:
+If issues arise, check:
 
-Your Go installation with
+Your Go installation:
 
 ```bash
-
 go version
 ```
 
-Your dependencies with
+Your dependencies:
 
 ```bash
 go list -m all
 ```
 
-Your dependencies with
+And tidy up:
 
 ```bash
 go mod tidy
 ```
 
+### Run all project tests
+```bash
+go test ./...  
+go test -v -cover -race -bench
+```
+
+## Inspect which code parts aren't covered by tests
+Step 1 - run tests with `-coverprofile` flag
+```bash
+go test -coverprofile=coverage.out ./...
+```
+Coverage Report
+```bash
+go tool cover -html=coverage.out
+```
 ### Contribution
 
-Please see [project-ricotta](https://github.com/Lasagna-Love-Portal/project-ricotta) for more details on contributor guidelines. Contributions are welcomed. Please submit a PR with your changes and they will be reviewed as soon as possible.
+See [project-ricotta](https://github.com/Lasagna-Love-Portal/project-ricotta) for contributor guidelines. Submit a PR for your changes.
 
 ### License
 
-This project is licensed under the terms of the license found in the file [`LICENSE`](LICENSE) in the root directory of this project.
+This project is licensed under the [`LICENSE`](LICENSE) terms.
 
 ### Contact
 
-For any queries or concerns, please open an issue in the repository or send us an [email](mailto:info@lasagnalove.org).
+For queries, please open an issue or [email](mailto:info@lasagnalove.org) us.
 
 ## Acknowledgements
 
