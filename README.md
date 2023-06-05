@@ -82,11 +82,14 @@ go mod tidy
 ```
 
 ### Run all project tests
-```bash
-go test ./...  
-go test -v -cover -race -bench
-```
 
+```bash
+go test -v -cover -race -bench . ./...
+```
+or, 
+```bash
+go test ./...
+```
 ## Inspect which code parts aren't covered by tests
 Step 1 - run tests with `-coverprofile` flag
 ```bash
