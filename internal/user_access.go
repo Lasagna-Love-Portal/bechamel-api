@@ -49,8 +49,12 @@ func GetUserByUserName(userName string) (model.LasagnaLoveUser, error) {
 }
 
 func AddNewUser(newUserProfile model.LasagnaLoveUser) (model.LasagnaLoveUser, error) {
-	if newUserProfile.ID != 0 || newUserProfile.FamilyName == "" || newUserProfile.GivenName == "" ||
-		newUserProfile.Username == "" || newUserProfile.Password == "" {
+	// Not allowed to specify an userID - error if one is provided
+	if newUserProfile.ID != 0 {
+		return model.LasagnaLoveUser{}, errors.New("userID may not be specified")
+	}
+
+	if newUserProfile.FamilyName == "" || newUserProfile.GivenName == "" || newUserProfile.Username == "" || newUserProfile.Password == "" {
 		return model.LasagnaLoveUser{}, errors.New("invalid or incomplete user data")
 	}
 
