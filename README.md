@@ -100,6 +100,9 @@ go tool cover -html=coverage.out
 
 See [project-ricotta](https://github.com/Lasagna-Love-Portal/project-ricotta) for contributor guidelines. Submit a PR for your changes.
 
+For an examples of how to add new tests, see the [a quick testing guide](./documentation/TESTING.md).
+
+
 ### License
 
 This project is licensed under the [`LICENSE`](LICENSE) terms.
