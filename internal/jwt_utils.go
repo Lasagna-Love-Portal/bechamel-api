@@ -63,7 +63,7 @@ func VerifyAccessJWT(jwtTokenString string) (string, error) {
 	token, err := jwt.Parse(jwtTokenString, func(token *jwt.Token) (interface{}, error) {
 		return jwtAccessSigningKey, nil
 	})
-	if token == nil || err != nil {
+	if err != nil {
 		// TODO: propogate parsing error from JWT up in a more useful form?
 		return "", fmt.Errorf("could not parse supplied JWT: %w", err)
 	}
