@@ -18,17 +18,22 @@ import (
 var jwtSigningKey = []byte("GetThisFromENV")
 
 // Number of seconds generated JWT tokens are valid for before expiration
+// when generating with the method not requiring an expiration period.
 // TODO: get this from environment or in another fashion that allows runtime configurability
 const JWT_TTL = 600
 
 // Generates a JWT token for a given userName
 
 func GenerateJWT(userName string) (string, error) {
+	return GenerateJWTWithTTL(userName, JWT_TTL)
+}
+
+func GenerateJWTWithTTL(userName string, ttl int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userName": userName,
 		"nbf":      time.Now().Unix(),
 		"iat":      time.Now().Unix(),
-		"eat":      time.Now().Add(time.Second * time.Duration(JWT_TTL)).Unix(),
+		"exp":      time.Now().Add(time.Second * time.Duration(ttl)).Unix(),
 	})
 	return token.SignedString(jwtSigningKey)
 }
@@ -38,7 +43,7 @@ func GenerateJWT(userName string) (string, error) {
 
 func verifyJWT(jwtTokenString string) (string, error) {
 	if jwtTokenString == "" {
-		return "", errors.New("jwt token to verify must be non-empty")
+		return "", errors.New("JWT token to verify must be non-empty")
 	}
 
 	token, err := jwt.Parse(jwtTokenString, func(token *jwt.Token) (interface{}, error) {
@@ -51,7 +56,11 @@ func verifyJWT(jwtTokenString string) (string, error) {
 
 	if token.Valid {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
-			return fmt.Sprint(claims["userName"]), nil
+			if err = claims.Valid(); err == nil {
+				return fmt.Sprint(claims["userName"]), nil
+			} else {
+				return "", errors.New("supplied JWT expired or not yet valid")
+			}
 		} else {
 			return "", errors.New("error retrieving user name from JWT token")
 		}
