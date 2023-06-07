@@ -326,7 +326,8 @@ components:
 
             **IMPORTANT** notes may include allergy or dietary restriction information, or other important information for requesters to provide and volunteers to see.
       required:
-        - stage
+        - requester_id
+        - recipient_id
 
     attestations:
       description: A list of attestations that a user has made to Lasagana Love, either during their signup process
