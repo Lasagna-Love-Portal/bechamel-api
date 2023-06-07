@@ -5,9 +5,22 @@ go 1.20
 require github.com/gin-gonic/gin v1.9.1
 
 require (
-	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gin-contrib/cors v1.4.0
+	github.com/stretchr/testify v1.8.3
 )
+
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+)
+
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+)
+
+require github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect
@@ -29,7 +42,6 @@ require (
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
-	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
