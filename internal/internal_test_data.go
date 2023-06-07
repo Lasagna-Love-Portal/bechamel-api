@@ -32,6 +32,13 @@ var LasagnaLoveUsers_DummyData = []model.LasagnaLoveUser{
 		NewsUpdatesPermission:   false,
 		Active:                  true,
 		Paused:                  false,
+		Attestations: model.LasagnaLoveAttestations{
+			UserIsEighteen:                   true,
+			UserAcceptedEmailCommunications:  true,
+			VolunteerAcceptedIndemnityWaiver: "2023-04-11T07:11:05.122Z",
+			VolunteerAcceptedVolunteerTerms:  "2023-04-11T07:11:05.191Z",
+			VolunteerCompletedSafetyTraining: "2023-04-11T08:41:19.706Z",
+		},
 		VolunteerInfo: &model.LasagnaLoveVolunteerInfo{
 			Birthday:                 "1980-02-29",
 			GenderIdentity:           "male",
@@ -60,10 +67,28 @@ var LasagnaLoveUsers_DummyData = []model.LasagnaLoveUser{
 		NewsUpdatesPermission:   true,
 		Active:                  true,
 		Paused:                  false,
+		Attestations: model.LasagnaLoveAttestations{
+			UserIsEighteen:                    true,
+			UserAcceptedEmailCommunications:   true,
+			RequesterAcceptedLiabilityRelease: "2023-05-16T06:44:19.901Z",
+		},
 		RecipientInfo: &model.LasagnaLoveRecipientInfo{
 			AdultCount:          4,
 			ChildCount:          1,
 			DietaryRestrictions: []string{"vegetarian"},
 		},
+	},
+}
+
+var LasagnaLoveRequests_DummyData = []model.LasagnaLoveRequest{
+	{
+		ID:             1,
+		RequesterID:    2,
+		RecipientID:    2,
+		Type:           "meal",
+		Stage:          "accepted",
+		CreationTime:   "2023-06-01T23:01:39.211Z",
+		LastUpdateTime: "2023-06-04T08:31:15.013Z",
+		Notes:          "Dummy internal testing request for Project Ricotta project.",
 	},
 }

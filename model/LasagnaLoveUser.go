@@ -2,7 +2,6 @@ package model
 
 import "encoding/json"
 
-// TODO: Fix up required vs. optional
 type LasagnaLoveUser struct {
 	ID                      int                       `json:"id"`
 	Roles                   []string                  `json:"roles"`
@@ -26,6 +25,7 @@ type LasagnaLoveUser struct {
 	Active                  bool                      `json:"active"`
 	Paused                  bool                      `json:"paused"`
 	PausedEndDate           string                    `json:"paused_end_date,omitempty"`
+	Attestations            LasagnaLoveAttestations   `json:"attestations"`
 	RecipientInfo           *LasagnaLoveRecipientInfo `json:"recipient_info,omitempty"`
 	VolunteerInfo           *LasagnaLoveVolunteerInfo `json:"volunteer_info,omitempty"`
 }
