@@ -27,3 +27,6 @@ type LasagnaLoveUser struct {
 	RecipientInfo           *LasagnaLoveRecipientInfo `json:"recipient_info,omitempty"`
 	VolunteerInfo           *LasagnaLoveVolunteerInfo `json:"volunteer_info,omitempty"`
 }
+
+var LasagnaLoveUserPermittedRoles = [...]string{"requester", "recipient", "chef",
+	"leader", "director", "admin", "superadmin"}

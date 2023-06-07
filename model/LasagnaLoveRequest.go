@@ -12,3 +12,7 @@ type LasagnaLoveRequest struct {
 	LastUpdateTime string `json:"last_update_time"`
 	Notes          string `json:"notes"`
 }
+
+var LasagnaLoveRequestPermittedStages = [...]string{"ingested", "reviewed", "accepted",
+	"backlog", "matched", "contacted", "scheduled",
+	"delivered", "no_response", "no_longer_wanted"}

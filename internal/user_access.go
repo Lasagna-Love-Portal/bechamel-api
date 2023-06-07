@@ -12,9 +12,6 @@ import (
 	"time"
 )
 
-var permittedRoles = [...]string{"requester", "recipient", "chef",
-	"leader", "director", "admin", "superadmin"}
-
 func findUser(userFilter func(model.LasagnaLoveUser) bool) (model.LasagnaLoveUser, error) {
 	for _, user := range LasagnaLoveUsers_DummyData {
 		if userFilter(user) {
@@ -46,6 +43,14 @@ func GetUserByUserName(userName string) (model.LasagnaLoveUser, error) {
 	return findUser(func(u model.LasagnaLoveUser) bool { return u.Username == userName })
 }
 
+func GetUserByEmailAddress(emailAddress string) (model.LasagnaLoveUser, error) {
+	if emailAddress == "" {
+		return model.LasagnaLoveUser{}, errors.New("emailAddress must be non-empty")
+	}
+
+	return findUser(func(u model.LasagnaLoveUser) bool { return u.Email == emailAddress })
+}
+
 func AddNewUser(newUserProfile model.LasagnaLoveUser) (model.LasagnaLoveUser, error) {
 	// Not allowed to specify an userID - error if one is provided
 	if newUserProfile.ID != 0 {
@@ -65,12 +70,15 @@ func AddNewUser(newUserProfile model.LasagnaLoveUser) (model.LasagnaLoveUser, er
 		return model.LasagnaLoveUser{}, errors.New("invalid or incomplete user data")
 	}
 	for _, role := range newUserProfile.Roles {
-		if !StringIsInArray(permittedRoles[:], role) {
+		if !StringIsInArray(model.LasagnaLoveUserPermittedRoles[:], role) {
 			return model.LasagnaLoveUser{}, errors.New("invalid value supplied in roles array")
 		}
 	}
 	if _, err := GetUserByUserName(newUserProfile.Username); err == nil {
 		return model.LasagnaLoveUser{}, errors.New("username already exists")
+	}
+	if _, err := GetUserByEmailAddress(newUserProfile.Email); err == nil {
+		return model.LasagnaLoveUser{}, errors.New("email address already in use, dupliate usage not permitted")
 	}
 
 	newUserProfile.ID = len(LasagnaLoveUsers_DummyData) + 1
