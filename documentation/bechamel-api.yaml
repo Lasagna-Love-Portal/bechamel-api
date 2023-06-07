@@ -232,6 +232,8 @@ components:
             This should be a date string in ISO 8601 extended format, "YYYY-MM-DD".
             An empty value indicates the user is paused from request creation and matching indefinitely.
           default: ""
+        attestations:
+          $ref: '#/components/schemas/attestations'
         recipient_info:
           description: If this user has made a request to Lasagna Love - e.g. is a past or current requester - this will contain
             information about the user as a recipient as collected from the user's request, and as amended / updated periodically
@@ -507,8 +509,6 @@ components:
                 This may be 0 to indicate no availability though this is not recommended.
                 Large requests, for example meal requests for large parties, may be considered as multiple requests by the matching system.
           example: ["2023-04-30 2023-05-06 1", "2023-05-07 2023-05-13 1"]
-        attestations:
-          $ref: '#/components/schemas/attestations'
 
   responses:
     bad_request:
