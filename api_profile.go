@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"project-ricotta/bechamel-api/internal"
 	"project-ricotta/bechamel-api/model"
@@ -72,8 +73,8 @@ func postUserProfile(c *gin.Context) {
 
 	newUserProfile, err = internal.AddNewUser(newUserProfile)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"errors": []string{"Could not add new user profile"}})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": []string{fmt.Sprintf("error adding profile: %v", err)}})
 		return
 	}
 
