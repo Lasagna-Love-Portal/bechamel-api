@@ -12,10 +12,6 @@ import (
 	"time"
 )
 
-var permittedStages = [...]string{"ingested", "reviewed", "accepted",
-	"backlog", "matched", "contacted", "scheduled",
-	"delivered", "no_response", "no_longer_wanted"}
-
 func findRequest(requestFilter func(model.LasagnaLoveRequest) bool) (model.LasagnaLoveRequest, error) {
 	for _, request := range LasagnaLoveRequests_DummyData {
 		if requestFilter(request) {
@@ -37,7 +33,7 @@ func AddNewRequest(newRequest model.LasagnaLoveRequest) (model.LasagnaLoveReques
 		return model.LasagnaLoveRequest{}, errors.New("request missing required RequesterID value")
 	} else if newRequest.RecipientID == 0 {
 		return model.LasagnaLoveRequest{}, errors.New("request missing required RecipientID value")
-	} else if newRequest.Stage != "" && !StringIsInArray(permittedStages[:], newRequest.Stage) {
+	} else if newRequest.Stage != "" && !StringIsInArray(model.LasagnaLoveRequestPermittedStages[:], newRequest.Stage) {
 		return model.LasagnaLoveRequest{}, errors.New("request stage not a permitted value")
 	} else if newRequest.Type != "" && newRequest.Type != "meal" {
 		return model.LasagnaLoveRequest{}, errors.New("request type must be \"meal\" if specified")
