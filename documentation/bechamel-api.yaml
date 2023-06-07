@@ -380,15 +380,6 @@ components:
           - gluten_free
           - nut_allergy
           - other_restrictions
-    gender_identity:
-      description: A list of gender identities that volunteers may indicate for their Lasagna Love profile.
-      type: string
-      enum:
-        - female
-        - male
-        - non_binary
-        - prefer_not_to_say
-      default: "prefer_not_to_say"
     recipient_info:
       description: Information pertaining to Lasagna Love meal request recipients
       type: object
@@ -428,7 +419,14 @@ components:
           example: "1990-01-25"
           default: ""
         gender_identity:
-          $ref: '#/components/schemas/gender_identity'
+          description: A list of gender identities that volunteers may indicate for their Lasagna Love profile.
+          type: string
+          enum:
+            - female
+            - male
+            - non_binary
+            - prefer_not_to_say
+          default: "prefer_not_to_say"
         volunteering_with:
           type: string
           description: Free-form string indicating organization, group or other people this volunteer is volunteering with.
