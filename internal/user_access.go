@@ -2,15 +2,18 @@ package internal
 
 // Project Ricotta: Bechamel API
 //
-// This is a temporary data source with dummy data.
-// This is here to allow the Bechamel API portion of Project Ricotta to get started.
-// This will be replaced with calls to the Ragu user information service,
-// once that is available.
+// TODO: this is coupled somewhat tightly to the dummy test data held
+// in internal_test_data.go - as we add external data source access,
+// this will need to change to match.
 
 import (
 	"errors"
 	"project-ricotta/bechamel-api/model"
+	"time"
 )
+
+var permittedRoles = [...]string{"requester", "recipient", "chef",
+	"leader", "director", "admin", "superadmin"}
 
 func findUser(userFilter func(model.LasagnaLoveUser) bool) (model.LasagnaLoveUser, error) {
 	for _, user := range LasagnaLoveUsers_DummyData {
@@ -48,17 +51,35 @@ func AddNewUser(newUserProfile model.LasagnaLoveUser) (model.LasagnaLoveUser, er
 	if newUserProfile.ID != 0 {
 		return model.LasagnaLoveUser{}, errors.New("userID may not be specified")
 	}
-
-	if newUserProfile.FamilyName == "" || newUserProfile.GivenName == "" || newUserProfile.Username == "" || newUserProfile.Password == "" {
+	if len(newUserProfile.Roles) == 0 ||
+		newUserProfile.Username == "" ||
+		newUserProfile.Password == "" ||
+		newUserProfile.Email == "" ||
+		newUserProfile.GivenName == "" ||
+		newUserProfile.FamilyName == "" ||
+		len(newUserProfile.StreetAddress) == 0 ||
+		newUserProfile.City == "" ||
+		newUserProfile.StateOrProvince == "" ||
+		newUserProfile.PostalCode == "" ||
+		newUserProfile.MobilePhone == "" {
 		return model.LasagnaLoveUser{}, errors.New("invalid or incomplete user data")
 	}
-
+	for _, role := range newUserProfile.Roles {
+		if !StringIsInArray(permittedRoles[:], role) {
+			return model.LasagnaLoveUser{}, errors.New("invalid value supplied in roles array")
+		}
+	}
 	if _, err := GetUserByUserName(newUserProfile.Username); err == nil {
 		return model.LasagnaLoveUser{}, errors.New("username already exists")
 	}
 
 	newUserProfile.ID = len(LasagnaLoveUsers_DummyData) + 1
 	newUserProfile.Password = HashPassword(newUserProfile.Password)
+	// NOTE: this is not an arbitrary formatting string, this is required format string
+	// to get time created in ISO 8601 simplified extended format as returned
+	// by JavaScript's toISOString() function.
+	newUserProfile.CreationTime = time.Now().UTC().Format("2006-01-02T15:04:05.000Z0700")
+	newUserProfile.LastUpdateTime = newUserProfile.CreationTime
 	LasagnaLoveUsers_DummyData = append(LasagnaLoveUsers_DummyData, newUserProfile)
 	return newUserProfile, nil
 }
