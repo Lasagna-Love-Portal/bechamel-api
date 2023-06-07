@@ -103,7 +103,7 @@ func TestAddNewUser(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Add duplicate user",
+			name: "Add user with duplicated Username",
 			call: func() (model.LasagnaLoveUser, error) {
 				return AddNewUser(model.LasagnaLoveUser{
 					Username:   "TestUser1",
@@ -132,6 +132,25 @@ func TestAddNewUser(t *testing.T) {
 				})
 			},
 			wantErr: false,
+		},
+		{
+			name: "Add user with duplicated Email address",
+			call: func() (model.LasagnaLoveUser, error) {
+				return AddNewUser(model.LasagnaLoveUser{
+					Roles:           []string{"chef"},
+					Username:        "newtestuser3",
+					Password:        "password3",
+					Email:           "testuser3@example.com",
+					GivenName:       "Test",
+					FamilyName:      "UserThree",
+					StreetAddress:   []string{"111 Testing Plaza", "Suite 1"},
+					City:            "Anywhere",
+					StateOrProvince: "AB",
+					PostalCode:      "T5B 6W2",
+					MobilePhone:     "780-555-1212",
+				})
+			},
+			wantErr: true,
 		},
 	}
 	runUserTests(t, tests)
