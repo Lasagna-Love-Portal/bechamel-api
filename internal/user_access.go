@@ -12,13 +12,8 @@ import (
 	"project-ricotta/bechamel-api/model"
 )
 
-var lasagnaLoveUsers = []model.LasagnaLoveUser{
-	{ID: 1, Username: "TestUser1", Password: "password1", GivenName: "Test", FamilyName: "UserOne"},
-	{ID: 2, Username: "TestUser2", Password: "password2", GivenName: "Test", FamilyName: "UserTwo"},
-}
-
 func findUser(userFilter func(model.LasagnaLoveUser) bool) (model.LasagnaLoveUser, error) {
-	for _, user := range lasagnaLoveUsers {
+	for _, user := range LasagnaLoveUsers_DummyData {
 		if userFilter(user) {
 			return user, nil
 		}
@@ -62,7 +57,7 @@ func AddNewUser(newUserProfile model.LasagnaLoveUser) (model.LasagnaLoveUser, er
 		return model.LasagnaLoveUser{}, errors.New("username already exists")
 	}
 
-	newUserProfile.ID = len(lasagnaLoveUsers) + 1
-	lasagnaLoveUsers = append(lasagnaLoveUsers, newUserProfile)
+	newUserProfile.ID = len(LasagnaLoveUsers_DummyData) + 1
+	LasagnaLoveUsers_DummyData = append(LasagnaLoveUsers_DummyData, newUserProfile)
 	return newUserProfile, nil
 }
