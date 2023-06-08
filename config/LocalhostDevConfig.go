@@ -10,7 +10,7 @@ func (l *LocalhostDevConfig) PasswordSalt() []byte {
 }
 
 func (l *LocalhostDevConfig) AccessJWTTTL() int {
-	return 10 * 60 * 60 // 600 minutes
+	return 10 * 60 // 10 minutes
 }
 
 func (l *LocalhostDevConfig) AccessJWTSigningKey() []byte {
