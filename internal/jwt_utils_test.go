@@ -5,7 +5,13 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+
+	"project-ricotta/bechamel-api/config"
 )
+
+func init() {
+	config.RuntimeConfig = config.NewLocalhostDevConfig()
+}
 
 func TestValidateErrorForEmptyAccessJWT(t *testing.T) {
 	expected := "JWT token to verify must be non-empty"
