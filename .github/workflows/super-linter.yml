@@ -8,7 +8,7 @@ name: Lint Code Base
 
 on:
   push:
-    branches: ["dev", "main", "super-linter-addition"]
+    branches: ["dev", "main", "mattkuznicki-ll/super-linter-addition"]
   pull_request:
     branches: ["dev", "main"]
 jobs:
