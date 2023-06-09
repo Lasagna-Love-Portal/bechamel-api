@@ -16,7 +16,7 @@ var LasagnaLoveUsers_DummyData = []model.LasagnaLoveUser{
 		ID:                      1,
 		Roles:                   []string{"chef"},
 		Username:                "TestUser1",
-		Password:                "password1",
+		Password:                "EsX3b/B4fCYGb2+iAs4fAIXQtiq3EydUDi03ECVvTEE=", // "password1, hashed"
 		GivenName:               "Test",
 		FamilyName:              "UserOne",
 		Email:                   "testuser1@example.com",
@@ -51,7 +51,7 @@ var LasagnaLoveUsers_DummyData = []model.LasagnaLoveUser{
 		ID:                      2,
 		Roles:                   []string{"requester", "recipient"},
 		Username:                "TestUser2",
-		Password:                "password2",
+		Password:                "TnhbYUymFq5gr1jvyw1AmTviqlp3sYp7t0VxfT7ut1M=", // "password2", hashed
 		GivenName:               "Test",
 		FamilyName:              "UserTwo",
 		Email:                   "testuser2@example.com",
