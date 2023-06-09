@@ -13,7 +13,7 @@ import (
 )
 
 func findUser(userFilter func(model.LasagnaLoveUser) bool) (model.LasagnaLoveUser, error) {
-	for _, user := range LasagnaLoveUsers_DummyData {
+	for _, user := range LasagnaLoveUsersDummyData {
 		if userFilter(user) {
 			return user, nil
 		}
@@ -81,13 +81,13 @@ func AddNewUser(newUserProfile model.LasagnaLoveUser) (model.LasagnaLoveUser, er
 		return model.LasagnaLoveUser{}, errors.New("email address already in use, dupliate usage not permitted")
 	}
 
-	newUserProfile.ID = len(LasagnaLoveUsers_DummyData) + 1
+	newUserProfile.ID = len(LasagnaLoveUsersDummyData) + 1
 	newUserProfile.Password = HashPassword(newUserProfile.Password)
 	// NOTE: this is not an arbitrary formatting string, this is required format string
 	// to get time created in ISO 8601 simplified extended format as returned
 	// by JavaScript's toISOString() function.
 	newUserProfile.CreationTime = time.Now().UTC().Format("2006-01-02T15:04:05.000Z0700")
 	newUserProfile.LastUpdateTime = newUserProfile.CreationTime
-	LasagnaLoveUsers_DummyData = append(LasagnaLoveUsers_DummyData, newUserProfile)
+	LasagnaLoveUsersDummyData = append(LasagnaLoveUsersDummyData, newUserProfile)
 	return newUserProfile, nil
 }

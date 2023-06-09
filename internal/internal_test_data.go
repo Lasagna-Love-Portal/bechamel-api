@@ -11,7 +11,7 @@ import (
 // This will be replaced with calls to the Ragu user information service,
 // once that is available.
 
-var LasagnaLoveUsers_DummyData = []model.LasagnaLoveUser{
+var LasagnaLoveUsersDummyData = []model.LasagnaLoveUser{
 	{
 		ID:                      1,
 		Roles:                   []string{"chef"},
