@@ -5,13 +5,13 @@ import (
 	"testing"
 )
 
-type testType struct {
+type userTestType struct {
 	name    string
 	call    func() (model.LasagnaLoveUser, error)
 	wantErr bool
 }
 
-func runTests(t *testing.T, tests []testType) {
+func runUserTests(t *testing.T, tests []userTestType) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := tt.call()
@@ -23,7 +23,7 @@ func runTests(t *testing.T, tests []testType) {
 }
 
 func TestAuthorizeUser(t *testing.T) {
-	tests := []testType{
+	tests := []userTestType{
 		{
 			name:    "Correct credentials",
 			call:    func() (model.LasagnaLoveUser, error) { return AuthorizeUser("TestUser1", "password1") },
@@ -35,11 +35,11 @@ func TestAuthorizeUser(t *testing.T) {
 			wantErr: true,
 		},
 	}
-	runTests(t, tests)
+	runUserTests(t, tests)
 }
 
 func TestGetUserByID(t *testing.T) {
-	tests := []testType{
+	tests := []userTestType{
 		{
 			name:    "Existing user ID",
 			call:    func() (model.LasagnaLoveUser, error) { return GetUserByID(1) },
@@ -47,15 +47,15 @@ func TestGetUserByID(t *testing.T) {
 		},
 		{
 			name:    "Non-existing user ID",
-			call:    func() (model.LasagnaLoveUser, error) { return GetUserByID(100) },
+			call:    func() (model.LasagnaLoveUser, error) { return GetUserByID(0) },
 			wantErr: true,
 		},
 	}
-	runTests(t, tests)
+	runUserTests(t, tests)
 }
 
 func TestGetUserByUserName(t *testing.T) {
-	tests := []testType{
+	tests := []userTestType{
 		{
 			name:    "Existing username",
 			call:    func() (model.LasagnaLoveUser, error) { return GetUserByUserName("TestUser1") },
@@ -67,13 +67,13 @@ func TestGetUserByUserName(t *testing.T) {
 			wantErr: true,
 		},
 	}
-	runTests(t, tests)
+	runUserTests(t, tests)
 }
 
 func TestAddNewUser(t *testing.T) {
-	tests := []testType{
+	tests := []userTestType{
 		{
-			name: "Add valid new user",
+			name: "Add new user with insufficient data",
 			call: func() (model.LasagnaLoveUser, error) {
 				return AddNewUser(model.LasagnaLoveUser{
 					Username:   "TestUser3",
@@ -82,10 +82,28 @@ func TestAddNewUser(t *testing.T) {
 					FamilyName: "UserThree",
 				})
 			},
-			wantErr: false,
+			wantErr: true,
 		},
 		{
-			name: "Add duplicate user",
+			name: "Add new user with invalid role in Roles array",
+			call: func() (model.LasagnaLoveUser, error) {
+				return AddNewUser(model.LasagnaLoveUser{
+					Roles:           []string{"chef", "invalid"},
+					Username:        "TestUser-invalid role",
+					Password:        "password3",
+					Email:           "testuser3@example.com",
+					GivenName:       "Test",
+					FamilyName:      "UserThree",
+					StreetAddress:   []string{"111 Testing Plaza", "Suite 1"},
+					City:            "Anywhere",
+					StateOrProvince: "AB",
+					PostalCode:      "T5B 6W2",
+					MobilePhone:     "780-555-1212"})
+			},
+			wantErr: true,
+		},
+		{
+			name: "Add user with duplicated Username",
 			call: func() (model.LasagnaLoveUser, error) {
 				return AddNewUser(model.LasagnaLoveUser{
 					Username:   "TestUser1",
@@ -96,6 +114,44 @@ func TestAddNewUser(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name: "Add new user",
+			call: func() (model.LasagnaLoveUser, error) {
+				return AddNewUser(model.LasagnaLoveUser{
+					Roles:           []string{"chef"},
+					Username:        "TestUser3",
+					Password:        "password3",
+					Email:           "testuser3@example.com",
+					GivenName:       "Test",
+					FamilyName:      "UserThree",
+					StreetAddress:   []string{"111 Testing Plaza", "Suite 1"},
+					City:            "Anywhere",
+					StateOrProvince: "AB",
+					PostalCode:      "T5B 6W2",
+					MobilePhone:     "780-555-1212",
+				})
+			},
+			wantErr: false,
+		},
+		{
+			name: "Add user with duplicated Email address",
+			call: func() (model.LasagnaLoveUser, error) {
+				return AddNewUser(model.LasagnaLoveUser{
+					Roles:           []string{"chef"},
+					Username:        "newtestuser3",
+					Password:        "password3",
+					Email:           "testuser3@example.com",
+					GivenName:       "Test",
+					FamilyName:      "UserThree",
+					StreetAddress:   []string{"111 Testing Plaza", "Suite 1"},
+					City:            "Anywhere",
+					StateOrProvince: "AB",
+					PostalCode:      "T5B 6W2",
+					MobilePhone:     "780-555-1212",
+				})
+			},
+			wantErr: true,
+		},
 	}
-	runTests(t, tests)
+	runUserTests(t, tests)
 }

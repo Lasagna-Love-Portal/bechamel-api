@@ -214,26 +214,34 @@ components:
           type: boolean
           description: Denotes whether this user is active (true) or inactive (false).
             Inactive users are not allowed to login and are not used for matching.
-          default: true
+            Inactive requesters are not permitted to make new requests.
+          default: false
           example: true
         paused:
           type: boolean
           description: Denotes whether this user is eligible for request matching.
-            When false - recipients / requesters with requests can have these requests matched; a volunteer is able to be matched to requests
-            When true - recipients / requesters will not have their requests matched; a volunteer will not be matched to requests while paused.
+            When false - recipients / requesters with requests can have these requests matched;
+              a volunteer is able to be matched to requests.
+            When true - recipients / requesters will not have their requests matched;
+              a volunteer will not be matched to requests while paused.
           default: false
           example: false
         paused_end_date:
           type: string
-          description: If the paused value for the profile is true, this is a date to indicate when the user may be un-paused. This should be a date string in ISO 8601 extended format, "YYYY-MM-DD"
+          description: If the paused value for the profile is true, this is a date to indicate when the user may be un-paused.
+            This should be a date string in ISO 8601 extended format, "YYYY-MM-DD".
+            An empty value indicates the user is paused from request creation and matching indefinitely.
           default: ""
+        attestations:
+          $ref: '#/components/schemas/attestations'
         recipient_info:
           description: If this user has made a request to Lasagna Love - e.g. is a past or current requester - this will contain
             information about the user as a recipient as collected from the user's request, and as amended / updated periodically
             by subsequent requests from the user.
 
 
-            An empty object is to be used and expected when a user is not a requester, e.g. the user's type entry does not contain "requester" as a value.
+            This value may be omitted, null or empty when a user is not a recipient,
+            e.g. the user's type entry does not contain "recipient" as a value.
           $ref: '#/components/schemas/recipient_info'
         volunteer_info:
           description: If this user is a volunteer for Lasagna Love, this will contain information about the user as a volunteer
@@ -241,19 +249,22 @@ components:
             via the Lasagna Love portals or applications or in certain cases by local leaders, regional directors or admins.
 
 
-            An empty object is to be used and expected when a user is not a volunteer, e.g. the user's type entry does not contain "chef" as a value.
+            This value may be omitted, null or empty when a user is not a volunteer,
+            e.g. the user's type entry does not contain "chef" as a value.
           $ref: '#/components/schemas/volunteer_info'
           default: { }
       required:
-        - type
+        - roles
         - username
         - password
         - email
         - given_name
         - family_name
         - street_address
-        - region
-        - postcode
+        - city
+        - state_or_province
+        - postal_code
+        - mobile_phone
 
     request:
       description: A request made by a user to Lasagna Love. Currently these represent meal requests, it's intended the scope of requests
@@ -315,7 +326,8 @@ components:
 
             **IMPORTANT** notes may include allergy or dietary restriction information, or other important information for requesters to provide and volunteers to see.
       required:
-        - stage
+        - requester_id
+        - recipient_id
 
     attestations:
       description: A list of attestations that a user has made to Lasagana Love, either during their signup process
@@ -380,20 +392,12 @@ components:
           - gluten_free
           - nut_allergy
           - other_restrictions
-    gender_identity:
-      description: A list of gender identities that volunteers may indicate for their Lasagna Love profile.
-      type: string
-      enum:
-        - female
-        - male
-        - non_binary
-        - prefer_not_to_say
-      default: "prefer_not_to_say"
     recipient_info:
       description: Information pertaining to Lasagna Love meal request recipients
       type: object
       required:
         - adult_count
+        - dietary_restrictions
       properties:
         adult_count:
           type: integer
@@ -405,7 +409,17 @@ components:
           example: 1
         dietary_restrictions:
           $ref: '#/components/schemas/dietary_restrictions'
-          example: ["vegan"]
+        last_delivery_received:
+          type: string
+          description: An ISO 8601 format date string indicating the most recent delivery
+            received by the receiver. This should only include the date, in YYYY-MM-DD format.
+            This should be empty if the recipient has never received a delivery.
+          example: "1990-01-25"
+          default: ""
+        learned_about_from:
+          type: string
+          description: How the recipient heard about Lasagna Love.
+          example: "Elizabeth Dole Foundation"
     returned_error:
       description: Error return type for API operations with error information, when an error occurs during an API call
       type: object
@@ -428,7 +442,15 @@ components:
           example: "1990-01-25"
           default: ""
         gender_identity:
-          $ref: '#/components/schemas/gender_identity'
+          description: A list of gender identities that volunteers may indicate for their Lasagna Love profile.
+          type: string
+          enum:
+            - female
+            - male
+            - non_binary
+            - transgender
+            - prefer_not_to_say
+          default: "prefer_not_to_say"
         volunteering_with:
           type: string
           description: Free-form string indicating organization, group or other people this volunteer is volunteering with.
@@ -451,6 +473,12 @@ components:
             For Australia and Canada based volunteers, this is expressed in kilometers from their address to the recipient.
             ** NOTE: travel distance is calculated differently based on different regions.** Most regions calculate using
               "as the crow flies" distance. Certain regions use actual driving distance as calcuated by a 3rd party map API.
+        families_per_delivery:
+          type: integer
+          description: |
+            The number of families the volunteer is willing to make and deliver meals for,
+            per match period.
+          default: 1
         allowable_dietary_restrictions:
           $ref: '#/components/schemas/dietary_restrictions'
           example: ["vegetarian", "nonDairy", "nut_allergy"]
@@ -482,8 +510,6 @@ components:
                 This may be 0 to indicate no availability though this is not recommended.
                 Large requests, for example meal requests for large parties, may be considered as multiple requests by the matching system.
           example: ["2023-04-30 2023-05-06 1", "2023-05-07 2023-05-13 1"]
-        attestations:
-          $ref: '#/components/schemas/attestations'
 
   responses:
     bad_request:
@@ -832,7 +858,7 @@ paths:
             schema:
               $ref: '#/components/schemas/profile'
             example:
-              type: ["chef"]
+              roles: ["chef"]
               username: UHFStationOwner
               password: PasswordForTheUser
               email: georgenewman@example.com
@@ -844,8 +870,8 @@ paths:
                 "1st Floor"
               ]
               city: Tulsa
-              region: OK
-              postcode: 74127
+              state_or_province: OK
+              postal_code: 74127
               home_phone: (02) 1234 5678
               mobile_phone: +1 312 555-1212
               mobile_contact_permission: true
@@ -1001,7 +1027,7 @@ paths:
             schema:
               $ref: '#/components/schemas/profile'
             example:
-              type: ["recipient"]
+              roles: ["recipient"]
               username: UHFStationOwner
               password: PasswordForTheUser
               email: georgenewman@example.com
@@ -1013,8 +1039,8 @@ paths:
                 "1st Floor"
               ]
               city: Tulsa
-              region: OK
-              postcode: 74127
+              state_or_province: OK
+              postal_code: 74127
               home_phone: (02) 1234 5678
               mobile_phone: +1 312 555-1212
               mobile_contact_permission: true

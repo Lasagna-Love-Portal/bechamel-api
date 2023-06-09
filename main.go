@@ -22,6 +22,8 @@ func main() {
 	router.GET("/profile", getCurrentUserProfile)
 	router.GET("/profile/:userID", getUserProfileByID)
 	router.POST("/profile", postUserProfile)
+	router.GET("/request/:requestID", getRequestByID)
+	router.POST("/request", postRequest)
 
 	router.Run("localhost:8080")
 }
