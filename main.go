@@ -1,11 +1,15 @@
 package main
 
 import (
+	"project-ricotta/bechamel-api/config"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	config.RuntimeConfig = config.NewLocalhostDevConfig()
+
 	router := gin.Default()
 	var corsConfig = cors.DefaultConfig()
 	// TODO: for the time being, we allow requests from all origins.

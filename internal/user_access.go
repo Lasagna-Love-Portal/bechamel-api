@@ -13,8 +13,10 @@ import (
 )
 
 var lasagnaLoveUsers = []model.LasagnaLoveUser{
-	{ID: 1, Username: "TestUser1", Password: "password1", GivenName: "Test", FamilyName: "UserOne"},
-	{ID: 2, Username: "TestUser2", Password: "password2", GivenName: "Test", FamilyName: "UserTwo"},
+	{ID: 1, Username: "TestUser1", Password: "EsX3b/B4fCYGb2+iAs4fAIXQtiq3EydUDi03ECVvTEE=", // "password1"
+		GivenName: "Test", FamilyName: "UserOne"},
+	{ID: 2, Username: "TestUser2", Password: "TnhbYUymFq5gr1jvyw1AmTviqlp3sYp7t0VxfT7ut1M=", // "password2"
+		GivenName: "Test", FamilyName: "UserTwo"},
 }
 
 func findUser(userFilter func(model.LasagnaLoveUser) bool) (model.LasagnaLoveUser, error) {
@@ -32,7 +34,7 @@ func AuthorizeUser(userName string, password string) (model.LasagnaLoveUser, err
 	}
 
 	return findUser(func(u model.LasagnaLoveUser) bool {
-		return u.Username == userName && u.Password == password
+		return u.Username == userName && u.Password == HashPassword(password)
 	})
 }
 
@@ -63,6 +65,7 @@ func AddNewUser(newUserProfile model.LasagnaLoveUser) (model.LasagnaLoveUser, er
 	}
 
 	newUserProfile.ID = len(lasagnaLoveUsers) + 1
+	newUserProfile.Password = HashPassword(newUserProfile.Password)
 	lasagnaLoveUsers = append(lasagnaLoveUsers, newUserProfile)
 	return newUserProfile, nil
 }

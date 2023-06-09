@@ -7,25 +7,15 @@ package internal
 import (
 	"errors"
 	"fmt"
+	"project-ricotta/bechamel-api/config"
 	"project-ricotta/bechamel-api/model"
 	"time"
 
 	"github.com/golang-jwt/jwt"
 )
 
-// TODO: get these in a more secure manner not hard-coded in the application.
-// See https://github.com/Lasagna-Love-Portal/bechamel-api/issues/5
-var jwtAccessSigningKey = []byte("GetThisFromENV")
-var jwtRefreshSigningKey = []byte("GetThisFromENV")
-
-// Number of seconds generated JWT tokens are valid for before expiration
-// when generating with the method not requiring an expiration period.
-// TODO: get this from environment or in another fashion that allows runtime configurability
-const ACCESS_JWT_TTL = 10 * 60
-const REFRESH_JWT_TTL = 7 * 24 * 60 * 60
-
 func GenerateAccessJWT(userName string) (string, error) {
-	return GenerateAccessJWTWithTTL(userName, ACCESS_JWT_TTL)
+	return GenerateAccessJWTWithTTL(userName, config.RuntimeConfig.AccessJWTTTL())
 }
 
 func GenerateAccessJWTWithTTL(userName string, ttl int) (string, error) {
@@ -35,11 +25,11 @@ func GenerateAccessJWTWithTTL(userName string, ttl int) (string, error) {
 		"iat":      time.Now().Unix(),
 		"exp":      time.Now().Add(time.Second * time.Duration(ttl)).Unix(),
 	})
-	return token.SignedString(jwtAccessSigningKey)
+	return token.SignedString(config.RuntimeConfig.AccessJWTSigningKey())
 }
 
 func GenerateRefreshJWT(userName string) (string, error) {
-	return GenerateAccessJWTWithTTL(userName, REFRESH_JWT_TTL)
+	return GenerateAccessJWTWithTTL(userName, config.RuntimeConfig.RefreshJWTTTL())
 }
 
 func GenerateRefreshJWTWithTTL(userName string, ttl int) (string, error) {
@@ -49,7 +39,7 @@ func GenerateRefreshJWTWithTTL(userName string, ttl int) (string, error) {
 		"iat":      time.Now().Unix(),
 		"exp":      time.Now().Add(time.Second * time.Duration(ttl)).Unix(),
 	})
-	return token.SignedString(jwtRefreshSigningKey)
+	return token.SignedString(config.RuntimeConfig.RefreshJWTSigningKey())
 }
 
 // Validates a supplied access JWT token and returns the userName for the user
@@ -61,7 +51,7 @@ func VerifyAccessJWT(jwtTokenString string) (string, error) {
 	}
 
 	token, err := jwt.Parse(jwtTokenString, func(token *jwt.Token) (interface{}, error) {
-		return jwtAccessSigningKey, nil
+		return config.RuntimeConfig.AccessJWTSigningKey(), nil
 	})
 	if token == nil || err != nil {
 		// TODO: propogate parsing error from JWT up in a more useful form?
@@ -102,7 +92,7 @@ func VerifyRefreshJWT(jwtTokenString string) (string, error) {
 	}
 
 	token, err := jwt.Parse(jwtTokenString, func(token *jwt.Token) (interface{}, error) {
-		return jwtRefreshSigningKey, nil
+		return config.RuntimeConfig.RefreshJWTSigningKey(), nil
 	})
 	if token == nil || err != nil {
 		// TODO: propogate parsing error from JWT up in a more useful form?
