@@ -30,6 +30,12 @@ brew install go # MacOS
 sudo apt-get install golang # Linux
 ```
 
+After installing Go, download the `goimports` package:
+
+```
+go install golang.org/x/tools/cmd/goimports@latest
+```
+
 ### Verification of Go installation
 
 Confirm your Go installation via this command:
@@ -184,6 +190,24 @@ And tidy up:
 ```bash
 go mod tidy
 ```
+
+### Linter specific troubleshooting
+
+#### File not goimports-ed
+
+If you get super-linter errors about files not being goimportes-ed, such as:
+
+```
+api_profile.go:1: File is not `goimports`-ed (goimports)
+```
+
+Make sure you have the goimports package as detailed in [Go language installation (if absent)](#go-language-installation-if-absent). Run the goimports program on the file:
+
+```
+goimports -local [filename] -w .
+```
+
+This should fix up the ordering of imports in the file.
 
 ## Pull requests
 
