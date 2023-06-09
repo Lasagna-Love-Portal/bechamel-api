@@ -872,6 +872,7 @@ paths:
         in the provided JSON body to the value provided.
 
         For embedded JSON objects, only the fields to update in those objects should be specified.
+
         *Example:* once a user watches the food safety training video, their profile can be updated to reflect this by
           providing the updated volunteer_info.attestations.volunteer_completed_safety_training field and value only.
 
@@ -887,11 +888,13 @@ paths:
 
           Values listed in the profile schema as required are not required for PATCH requests - **ONLY** fields
           to update should be provided.
+
+          See the profile object schema for a list of permitted fields and values.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/profile'
+              type: object
             example:
               password: new password
               volunteer_info: {
@@ -933,7 +936,7 @@ paths:
               ]
               city: Tulsa
               state_or_province: OK
-              postal_code: 74127
+              postal_code: "74127"
               home_phone: (02) 1234 5678
               mobile_phone: +1 312 555-1212
               mobile_contact_permission: true
@@ -1065,11 +1068,14 @@ paths:
 
           Values listed in the profile schema as required are not required for PATCH requests - **ONLY** fields
           to update should be provided.
+
+          See the profile object schema for a list of permitted fields and values.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/profile'
+              type:
+                object
             example:
               password: new password,
               volunteer_info: {
@@ -1129,7 +1135,7 @@ paths:
               ]
               city: Tulsa
               state_or_province: OK
-              postal_code: 74127
+              postal_code: "74127"
               home_phone: (02) 1234 5678
               mobile_phone: +1 312 555-1212
               mobile_contact_permission: true
@@ -1139,6 +1145,7 @@ paths:
               recipient_info:
                 adult_count: 3
                 child_count: 1
+                dietary_restrictions: []
               attestations:
                 user_is_eighteen: true
                 user_accepted_email_communications: true
@@ -1247,11 +1254,14 @@ paths:
 
           Values listed in the request schema as required are not required for PATCH requests -
           **ONLY** fields to update should be provided.
+
+          See the request object schema for the list of permitted fields for updates.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/request'
+              type:
+                object
             example:
               stage: delivered
       responses:
@@ -1376,11 +1386,13 @@ paths:
 
           Values listed in the request schema as required are not required for PATCH requests - **ONLY** fields
           to update should be provided.
+          See the request object schema for the list of permitted fields for updates.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/request'
+              type:
+                object
             example:
               {"stage": "matched"}
       responses:
