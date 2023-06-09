@@ -51,7 +51,7 @@ func postRequest(c *gin.Context) {
 		return
 	}
 
-	if err := c.BindJSON(&newRequestProfile); err != nil {
+	if err = c.BindJSON(&newRequestProfile); err != nil {
 		if err.Error() == "EOF" {
 			c.JSON(http.StatusBadRequest, gin.H{"errors": []string{"Missing or unparsable JSON body"}})
 		} else {
