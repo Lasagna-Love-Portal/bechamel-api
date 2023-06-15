@@ -32,7 +32,7 @@ sudo apt-get install golang # Linux
 
 After installing Go, download the `goimports` package:
 
-```
+```bash
 go install golang.org/x/tools/cmd/goimports@latest
 ```
 
@@ -143,29 +143,42 @@ For more complicated unit testing, you can use the unit tests in the internal\jw
 
 ### Running the linter
 
-The Bechamel API project will be using the GitHub super-linter package for scanning code in pull requests.
-It's recommended to run this locally and resolve any issues detected in files you've modified before
-putting your pull requests out for review.
+The Bechamel API project uses the GitHub super-linter package for scanning non-Golang files in pull requests,
+and the [Golangci-lint-action](https://github.com/golangci/golangci-lint-action) action
+for linting Golang files.
+We recommend running the super-linter locally and resolving any issues detected in non-Golang files
+you've modified before putting your pull requests out for review.
+The Golangci-lint-action and the unit tests will run in GitHub on all branch pushes.
 
-You can run this locally using Docker. First, obtain the Super Linter Docker container:
+You can run the super-linter locally using Docker. First, obtain the super-linter Docker container:
 
-   ```
+   ```bash
    docker pull github/super-linter:latest
    ```
 
-Then you can use Docker to run the super-linter. To run against all the files in the project directory, from the top level bechamel-api directory:
+Then you can use Docker to run the super-linter. Use the environment variables file
+`super-linter.env` in the top level project directory.
+To run against all the files in the project directory, from the top level bechamel-api directory:
 
-   ```
-   docker run -e RUN_LOCAL=true -v .:/tmp/lint github/super-linter
+   ```bash
+   docker run --env-file super-linter.env -v .:/tmp/lint github/super-linter
    ```
 
 To narrow the files to lint, pass the file(s) to run as a regular expression
 in the environment variable FILTER_REGEX_INCLUDE. Or to exclude file(s) pass an appropriate
 regular expression in the FILTER_REGEX_EXCLUDE environment variable.
+Use UNIX style `/` forward-slash directory separators.
 For example, to only lint the file DEVELOPMENT.md in the top level directory:
 
+   ```bash
+   docker run --env-file super-linter.env -e FILTER_REGEX_INCLUDE=DEVELOPMENT.md -v .:/tmp/lint github/super-linter
    ```
-   docker run -e RUN_LOCAL=true -e FILTER_REGEX_INCLUDE=DEVELOPMENT.md -v .:/tmp/lint github/super-linter
+
+You can also use the `super-linter.env` file in the root of the project to store environment variables
+to pass to the `docker` invocation. Use the `--env-file` flag to pass the file:
+
+   ```bash
+   docker run --env-file super-linter.env -v ./tmp/lint github/super-linter
    ```
 
 See the [super-linter GitHub repository](https://github.com/github/super-linter/blob/main/README.md#filter-linted-files)
@@ -197,15 +210,15 @@ go mod tidy
 
 If you get super-linter errors about files not being goimportes-ed, such as:
 
-```
-api_profile.go:1: File is not `goimports`-ed (goimports)
-```
+   ```bash
+   api_profile.go:1: File is not `goimports`-ed (goimports)
+   ```
 
 Make sure you have the goimports package as detailed in [Go language installation (if absent)](#go-language-installation-if-absent). Run the goimports program on the file:
 
-```
-goimports -local [filename] -w .
-```
+   ```bash
+   goimports -local [filename] -w .
+   ```
 
 This should fix up the ordering of imports in the file.
 
@@ -222,7 +235,8 @@ done the following:
 4. Have you verified that existing functionality is working properly?
 5. Did you review and proofread your changes to ensure that all your changes are intentional?
 6. Did you run 'go mod tidy' to get any changes to dependencies into your pull request?
-7. Did you run the linter and resolve any newly found issues in the code your pull request changes?
+7. Did you run 'go build .' to make sure the project builds without errors?
+8. Did you run the linter and resolve any newly found issues in the code your pull request changes?
 
 You can make a pull request and mark the pull request as a draft in order to post the pull request
 and allow it to run through the GitHub CI actions, while going through the checklist items above

@@ -1,23 +1,24 @@
+---
 openapi: 3.0.0
 info:
   title: Project Ricotta Bechamel API Proposal
   description: >+
     Proposed API - REST API calls and data objects - for the Bechamel API.
 
-    
+
     The Bechamel API is used by web and mobile clients to support volunteers, requesters and admininstrators
     in the Lasagna Love system.
 
 
     The API described here is a **PROPOSAL** and is **NOT YET IMPLEMENTED**.
-  version: 0.0.3
+  version: 0.0.5
 
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT # JSON Web Token
+      bearerFormat: JWT  # JSON Web Token
   schemas:
     match:
       description: Represents a match between a volunteer and a requester's request.
@@ -36,14 +37,16 @@ components:
           type: integer
           description: |
             The id of the profile for the user who made this request.
-            **NOTE**: this is an optimization as this could be retrieved from the request; is it a worthwhile optimization?
+            **NOTE**: this is an optimization as this could be retrieved from the request;
+            is it a worthwhile optimization?
           readOnly: true
           example: 1234
         recipient_id:
           type: integer
           description: |
             The id of the profile for the intended recipient of the request.
-            **NOTE**: this is an optimization as this could be retrieved from the request; is it a worthwhile optimization?
+            **NOTE**: this is an optimization as this could be retrieved from the request;
+            is it a worthwhile optimization?
           readOnly: true
           example: 13466
         volunteer_id:
@@ -74,40 +77,45 @@ components:
           example: 1234
         roles:
           type: array
-          items:
-            type: string
           description: |
             Array of profile types this user has. Typically this will be one role, either to denote a requester
-            or a volunteer chef. This will contain multiple roles for local leaders, regional directors and other admininstrators;
+            or a volunteer chef. This will contain multiple roles for local leaders, regional directors
+            and other admininstrators;
             and for users who started out as one role (a requester or volunteer) but who subsequently has taken on
             a different additional role.
 
             Valid profile role strings -
             * "requester" - denotes a user who is a requester to Lasagna Love for meals or other types or requests.
-            * "recipient" - denotes a user who is the intended recipient for a Lasagna Love request. Many users will be both a requester and recipient.
-              However, Lasagna Love does let people make requests (nominations) for others, so some users will only be requesters or recipients.
+            * "recipient" - denotes a user who is the intended recipient for a Lasagna Love request.
+              Many users will be both a requester and recipient.
+              However, Lasagna Love does let people make requests (nominations) for others,
+              so some users will only be requesters or recipients.
             * "chef" - denotes a user who is volunteer chef for Lasagna Love.
-              **Note**: this is intentionally not a general 'volunteer' designation to allow for future differentiation of types of volunteers,
-                e.g. volunteers who are willing to provide meals vs. volunteers who are interested in other types of opportunities.
-            * "leader" - denotes a user who is a local leader for Lasagna Love. Local leaders coordinate volunteers and requests
-              for a given Lasagna Love service area.
-            * "director" - denotes a user who is a regional director for Lasagna Love. Regional directors coordinate the volunteers,
-              requests and local leaders for multiple Lasagna Love service areas in a region.
+              **Note**: this is intentionally not a general 'volunteer' designation to allow for future differentiation
+                of types of volunteers, e.g. volunteers who are willing to provide meals vs. volunteers
+                who are interested in other types of opportunities.
+            * "leader" - denotes a user who is a local leader for Lasagna Love. Local leaders coordinate volunteers
+              and requests for a given Lasagna Love service area.
+            * "director" - denotes a user who is a regional director for Lasagna Love. Regional directors coordinate
+              the volunteers, requests and local leaders for multiple Lasagna Love service areas in a region.
             * "admin" - denotes a user who is a Lasagna Love system admininstrator.
             * "superadmin" - denotes a user who is a Lasagna Love system super admininstrator.
-          enum:
-            - requester
-            - recipient
-            - chef
-            - leader
-            - director
-            - admin
-            - superadmin
-            - service
+          items:
+            type: string
+            enum:
+              - requester
+              - recipient
+              - chef
+              - leader
+              - director
+              - admin
+              - superadmin
+              - service
           example: ["chef"]
         username:
           type: string
-          description: Username for the user. This is the value to supply to the authentication API to authenticate the user.
+          description: Username for the user. This is the value to supply to the authentication API
+            to authenticate the user.
           example: UHFStationOwner
         password:
           type: string
@@ -116,18 +124,19 @@ components:
           example: ""
         email:
           type: string
-          description: Email address for this user. This email address will be the address used to communicate with the user,
-            to send password reset requests to, and for other Lasagna Love purposes.
+          description: Email address for this user. This email address will be the address used to communicate
+            with the user, to send password reset requests to, and for other Lasagna Love purposes.
           example: georgenewman@example.com
         email_validated:
           type: boolean
-          description: true if the user's email address was successfully validated by the Lasagna Love system, false if not.
-            Profiles with unvalidated email addresses should not be involved in request matching and are not eligible to have their requests fulfilled.
+          description: true if the user's email address was successfully validated by the Lasagna Love system,
+            false if not. Profiles with unvalidated email addresses should not be involved in request matching
+            and are not eligible to have their requests fulfilled.
 
 
-            Typically, the Lasagana Love system will update this value for a user's profile when email address validation is successful.
-            Users should not be allowed to set this to true interactively. However, a caller should set this to false when a new email address
-            is provided by a user for their profile.
+            Typically, the Lasagana Love system will update this value for a user's profile when email address validation
+            is successful. Users should not be allowed to set this to true interactively.
+            However, a caller should set this to false when a new email address is provided by a user for their profile.
           default: false
         creation_time:
           type: string
@@ -158,7 +167,8 @@ components:
           items:
             type: string
           description: Array of postal address lines. At least one is required for an address.
-            Second and subsequent lines are typically used for apartment or unit numbers, floor numbers or other qualifiers.
+            Second and subsequent lines are typically used for apartment or unit numbers,
+            floor numbers or other qualifiers.
           example: ["5400 West Edison St.", "1st Floor"]
         city:
           type: string
@@ -169,7 +179,8 @@ components:
           description: The abbreviated version of the state, province or territory the user resides in.
 
 
-            United States - this is the two letter abbreviation of the state or area, e.g. DE for Delaware, DC for Washington DC
+            United States - this is the two letter abbreviation of the state or area,
+            e.g. DE for Delaware, DC for Washington DC
 
 
             Canada - this is the two letter abbreviation of the province, e.g. AB for Alberta
@@ -189,7 +200,7 @@ components:
 
 
             Australia - this is 4 digit postal code
-          example: 74127
+          example: "74127"
         home_phone:
           type: string
           description: The home phone number for the user. This may include a country code and/or an area code.
@@ -202,12 +213,14 @@ components:
           default: ""
         mobile_contact_permission:
           type: boolean
-          description: When true, the user has provided consent for Lasagna Love to contact the user via text/SMS message at their mobile number
+          description: When true, the user has provided consent for Lasagna Love to contact the user
+            via text/SMS message at their mobile number
           default: false
           example: true
         news_updates_permission:
           type: boolean
-          description: When true, the user has provided consent for Lasagna Love to contact the user via email with news and updates about Lasagna Love
+          description: When true, the user has provided consent for Lasagna Love to contact the user
+            via email with news and updates about Lasagna Love
           default: false
           example: true
         active:
@@ -221,9 +234,9 @@ components:
           type: boolean
           description: Denotes whether this user is eligible for request matching.
             When false - recipients / requesters with requests can have these requests matched;
-              a volunteer is able to be matched to requests.
+            a volunteer is able to be matched to requests
             When true - recipients / requesters will not have their requests matched;
-              a volunteer will not be matched to requests while paused.
+            a volunteer will not be matched to requests while paused.
           default: false
           example: false
         paused_end_date:
@@ -235,24 +248,9 @@ components:
         attestations:
           $ref: '#/components/schemas/attestations'
         recipient_info:
-          description: If this user has made a request to Lasagna Love - e.g. is a past or current requester - this will contain
-            information about the user as a recipient as collected from the user's request, and as amended / updated periodically
-            by subsequent requests from the user.
-
-
-            This value may be omitted, null or empty when a user is not a recipient,
-            e.g. the user's type entry does not contain "recipient" as a value.
           $ref: '#/components/schemas/recipient_info'
         volunteer_info:
-          description: If this user is a volunteer for Lasagna Love, this will contain information about the user as a volunteer
-            as collected from the user at the time they signed up to volunteer, and as amended / updated by the user periodically
-            via the Lasagna Love portals or applications or in certain cases by local leaders, regional directors or admins.
-
-
-            This value may be omitted, null or empty when a user is not a volunteer,
-            e.g. the user's type entry does not contain "chef" as a value.
           $ref: '#/components/schemas/volunteer_info'
-          default: { }
       required:
         - roles
         - username
@@ -267,8 +265,9 @@ components:
         - mobile_phone
 
     request:
-      description: A request made by a user to Lasagna Love. Currently these represent meal requests, it's intended the scope of requests
-        that Lasagna Love takes on will expand in the future to be more than just meal requests.
+      description: A request made by a user to Lasagna Love. Currently these represent meal requests,
+        it's intended the scope of requests that Lasagna Love takes on will expand in the future
+        to be more than just meal requests.
       type: object
       properties:
         id:
@@ -283,8 +282,9 @@ components:
         recipient_id:
           type: integer
           description: user id of the user who will receive this request (i.e. meal delivery).
-            For POST requests, this should be supplied if it is known and different from that of the user making the POST request.
-          default: defaults to the requester_id value that is supplied or filled in by the POST request to make a new request.
+            For POST requests, this should be supplied if it is known and different from that
+            of the user making the POST request.
+            Defaults to the requester_id value that is supplied or filled in by the POST request to make a new request.
         type:
           type: string
           description: Type of request. Currently only "meal" is supported.
@@ -294,19 +294,27 @@ components:
           description: |
             The current stage this request is in. Valid values include:
 
-            * ingested: the request has been received by Lasagna Love. Typically this will only be used for requests made on others' behalf.
-            * reviewed: the request has had any manual review required carried out. Typically this will only be used for requests made on others' behalf.
-            * accepted: the recipient has accepted the request, made an account, accepted any required waivers and performed
-              any other required actions. Requests made by a person on their own behalf (not for someone else) will typically start in this stage.
+            * ingested: the request has been received by Lasagna Love.
+              Typically this will only be used for requests made on others' behalf.
+            * reviewed: the request has had any manual review required carried out.
+              Typically this will only be used for requests made on others' behalf.
+            * accepted: the recipient has accepted the request, made an account,
+              accepted any required waivers and performed any other required actions.
+              Requests made by a person on their own behalf (not for someone else) will typically start in this stage.
             * backlog: the request has been accepted by Lasagna Love and is in the backlog to be matched to a volunteer.
             * matched: this request has been matched with a volunteer
-            * contacted: the volunteer matched to this request has reached out to contact the recipient. The volunteer hasn't necessarily recieved a response.
+            * contacted: the volunteer matched to this request has reached out to contact the recipient.
+              The volunteer hasn't necessarily recieved a response.
             * scheduled: the volunteer has scheduled a delivery date with the recipient
-            * delivered: the volunteer has delivered the meal request to the recipient's location (or, once supported, performed the pledged volunteer service)
-            * no_response: the volunteer has reported the recipient as non-responsive to repeated attempts to communicate via multiple methods
-            * no_longer_wanted: this request is no longer desired for fulfillment, or both the volunteer and the local leader responsible for this request
-              could not contact the recipient after repeated attempts via multiple methods.
-          enum: ["ingested", "reviewed", "accepted", "backlog", "matched", "contacted", "scheduled", "delivered", "no_response", "no_longer_wanted"]
+            * delivered: the volunteer has delivered the meal request to the recipient's location
+              (or, once supported, performed the pledged volunteer service)
+            * no_response: the volunteer has reported the recipient as non-responsive
+              to repeated attempts to communicate via multiple methods
+            * no_longer_wanted: this request is no longer desired for fulfillment, or both the volunteer
+              and the local leader responsible for this request could not contact the recipient
+              after repeated attempts via multiple methods.
+          enum: ["ingested", "reviewed", "accepted", "backlog", "matched", "contacted", "scheduled",
+                 "delivered", "no_response", "no_longer_wanted"]
         creation_time:
           type: string
           description: An ISO 8601 simplified extended format date and time string denoting the date and time
@@ -322,9 +330,11 @@ components:
         notes:
           type: string
           description: |
-            Notes provided by the requester when making the request. These may include a thank you, some brief information about the requester, or other information.
+            Notes provided by the requester when making the request. These may include a thank you,
+            some brief information about the requester, or other information.
 
-            **IMPORTANT** notes may include allergy or dietary restriction information, or other important information for requesters to provide and volunteers to see.
+            **IMPORTANT** notes may include allergy or dietary restriction information,
+            or other important information for requesters to provide and volunteers to see.
       required:
         - requester_id
         - recipient_id
@@ -346,45 +356,54 @@ components:
             This permission is only for required communications.
         requester_accepted_liability_release:
           type: string
-          description: ISO 8601 simplified extended ISO format date and time string of the date when the user most recently
-            accepted the Lasagana Love food donation waiver and release of liability. Not required for users who are not requesters.
+          description: ISO 8601 simplified extended ISO format date and time string of the date
+            when the user most recently accepted the Lasagana Love food donation waiver and release of liability.
+            Not required for users who are not requesters.
             If empty, user's requests should not be matched nor be allowed to be manually matched.
           example: "2021-04-11T07:11:04.332Z"
         volunteer_accepted_indemnity_waiver:
           type: string
-          description: ISO 8601 simplified extended ISO format date and time string of the date when the user most recently
-            accepted the Lasagana Love volunteer waiver of indemnity. Not required for users who are not volunteers.
+          description: ISO 8601 simplified extended ISO format date and time string of the date
+            when the user most recently accepted the Lasagana Love volunteer waiver of indemnity.
+            Not required for users who are not volunteers.
             If empty, user should not be matched to requests nor be allowed to be manually matched.
           example: "2021-04-11T07:11:04.332Z"
         volunteer_accepted_volunteer_terms:
           type: string
-          description: ISO 8601 simplified extended ISO format date and time string of the date when the user most recently
-            accepted the Lasagna Love volunteer terms and conditions. Not requred for users who are not volunteers.
+          description: ISO 8601 simplified extended ISO format date and time string of the date
+            when the user most recently accepted the Lasagna Love volunteer terms and conditions.
+            Not requred for users who are not volunteers.
             If empty, user should not be matched to requests nor be allowed to be manually matched.
           example: "2021-04-11T07:11:04.332Z"
         volunteer_completed_safety_training:
           type: string
-          description: ISO 8601 simplified extended ISO format date and time string of the date when the user most recently
-            attested that they viewed the Lasagna Love required food safety video. Not requred for users who are not volunteers.
+          description: ISO 8601 simplified extended ISO format date and time string of the date
+            when the user most recently attested that they viewed the Lasagna Love required food safety video.
+            Not requred for users who are not volunteers.
             If empty, user should not be matched to requests nor be allowed to be manually matched.
           example: "2021-04-11T07:11:04.332Z"
     dietary_restrictions:
-      description: A list of different types of food allergies, dietary restrictions or preferences
-        which a requester may indicate the recipient has, and that volunteer chefs may indicate they can accomodate.
       type: array
+      description: |
+        An array of different types of dietary restrictions or preferences
+        which a requester may indicate the recipient has, and that volunteer chefs
+        may indicate they can accomodate.
+
+        Dietary restrictions are expressed as string values. These values may include:
+        * "vegetarian" - denotes that no meat is to be used for a meal request
+        * "vegan" - denotes that no animal products are to be used for a meal request
+        * "dairy_free" - denotes that no dairy or lactose-bearing products are to be used for a meal request
+        * "gluten_free" - denotes that no gluten-containing products (e.g. wheat, wheat flour)
+          are to be used for a meal request
+        * "nut_allergy" - denotes that no tree nuts or peanuts are to be used for a meal request
+        * "other_restrictions" - denotes that there are additional restrictions on a per-request basis
+          to accomodate for meal requests
+
+        This may an empty array. For a request, an empty array denotes that no dietary restrictions were indicated.
+        For a volunteer chef, an empty array denotes that the volunteer is not able or comfortable
+        accomodating any dietary restrictions.
       items:
         type: string
-        description: |
-          Array of types of food allergies expressed as string values. These values may include:
-          * "vegetarian" - denotes that no meat is to be used for a meal request
-          * "vegan" - denotes that no animal products are to be used for a meal request
-          * "dairy_free" - denotes that no dairy or lactose-bearing products are to be used for a meal request
-          * "gluten_free" - denotes that no gluten-containing products (e.g. wheat, wheat flour) are to be used for a meal request
-          * "nut_allergy" - denotes that no tree nuts or peanuts are to be used for a meal request
-          * "other_restrictions" - denotes that there are additional restrictions on a per-request basis to accomodate for meal requests
-
-          This may an empty array. For a request, an empty array denotes that no dietary restrictions were indicated. For a volunteer chef,
-          an empty array denotes that the volunteer is not able or comfortable accomodating any dietary restrictions.
         enum:
           - vegetarian
           - vegan
@@ -393,7 +412,14 @@ components:
           - nut_allergy
           - other_restrictions
     recipient_info:
-      description: Information pertaining to Lasagna Love meal request recipients
+      description: Information pertaining to Lasagna Love meal request recipients.
+        If this user has made a request to Lasagna Love - e.g. is a past or current requester -
+        this will contain information about the user as a recipient as collected from the user's request,
+        and as amended / updated periodically by subsequent requests from the user.
+
+
+        An empty object is to be used and expected when a user is not a requester, e.g. the user's type entry
+        does not contain "requester" as a value.
       type: object
       required:
         - adult_count
@@ -430,19 +456,27 @@ components:
             type: string
             description: Array of one or more strings describing the error or errors encountered processing the request
     volunteer_info:
-      description: Information pertaining to Lasagna Love volunteers, whether volunteer chefs or other types of volunteers
+      description: Information pertaining to Lasagna Love volunteers, whether volunteer chefs or other types of volunteers.
+        If this user is a volunteer for Lasagna Love, this will contain information about the user
+        as a volunteer as collected from the user at the time they signed up to volunteer,
+        and as amended / updated by the user periodically via the Lasagna Love portals or applications
+        or in certain cases by local leaders, regional directors or admins.
+
+
+        An empty object is to be used and expected when a user is not a volunteer,
+        e.g. the user's type entry does not contain "chef" as a value.
       type: object
       required:
         - max_travel_distance
       properties:
         birthday:
           type: string
-          description: An ISO 8601 format date string indicating the volunteer's birthday. This should only include the date,
-            in YYYY-MM-DD format.
+          description: An ISO 8601 format date string indicating the volunteer's birthday.
+            This should only include the date, in YYYY-MM-DD format.
           example: "1990-01-25"
           default: ""
         gender_identity:
-          description: A list of gender identities that volunteers may indicate for their Lasagna Love profile.
+          description: A gender identity that a volunteer may indicate for their Lasagna Love profile.
           type: string
           enum:
             - female
@@ -453,13 +487,15 @@ components:
           default: "prefer_not_to_say"
         volunteering_with:
           type: string
-          description: Free-form string indicating organization, group or other people this volunteer is volunteering with.
+          description: Free-form string indicating organization, group or other people
+            this volunteer is volunteering with.
           example: "Channel U-62"
           default: ""
         employer:
           type: string
-          description: The volunteer's employer. Lasagna Love leaders may use this information if provided to reach out
-            or assist the volunteer in reaching out to the employer to determine possible volunteer effort or fund matching opportunities.
+          description: The volunteer's employer. Lasagna Love leaders may use this information if provided
+            to reach out or assist the volunteer in reaching out to the employer to determine
+            possible volunteer effort or fund matching opportunities.
           default: ""
         facebook_name:
           type: string
@@ -481,7 +517,6 @@ components:
           default: 1
         allowable_dietary_restrictions:
           $ref: '#/components/schemas/dietary_restrictions'
-          example: ["vegetarian", "nonDairy", "nut_allergy"]
         accomodates_extra_requests:
           description: true if the volunteer is willing to be contacted for extra requests outside of their indicated schedule,
             false if the volunteer is unwilling.
@@ -505,10 +540,12 @@ components:
             description: |
               Each string denotes an availability region in the following form "YYYY-MM-DD YYYY-MM-DD \#", where
               * the first part is an ISO 8601 format date string specifying the first day of the availability period
-              * the second part is an ISO 8601 format date string specifying the last day, inclusive, of the availability period
+              * the second part is an ISO 8601 format date string specifying the last day, inclusive,
+                of the availability period
               * the third part is a non-negative integer specifying the number of requests that may be fulfilled.
                 This may be 0 to indicate no availability though this is not recommended.
-                Large requests, for example meal requests for large parties, may be considered as multiple requests by the matching system.
+                Large requests, for example meal requests for large parties,
+                may be considered as multiple requests by the matching system.
           example: ["2023-04-30 2023-05-06 1", "2023-05-07 2023-05-13 1"]
 
   responses:
@@ -550,7 +587,7 @@ paths:
       description: Use the returned JWT token in the Authorization header when making Bechamel API calls, as a Bearer token.
       security: []
       tags:
-      - User login and authentication
+        - User login and authentication
       requestBody:
         required: true
         content:
@@ -568,46 +605,46 @@ paths:
                       type: string
       responses:
         # NOTE: the returned responses from this endpoint are intentionally not the shared API responses.
-        '200': # ok
+        '200':  # ok
           description: Generated JWT token for the provided username and password
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 properties:
                   access_token:
                     type: string
                   refresh_token:
                     type: string
-        '400': # bad request
+        '400':  # bad request
           description: Returned when the supplied JSON message body was missing, incomplete or unparsable
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 properties:
                   errors:
                     type: array
                     items:
                       type: string
-        '401': # unauthorized
+        '401':  # unauthorized
           description: Returned when the supplied user credentials are not valid for the system
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 properties:
                   errors:
                     type: array
                     items:
                       type: string
-        '500': # internal server error
+        '500':  # internal server error
           description: Returned when the API server encounters an unexpected error
             attempting to generate a JWT token for the user.
             Caller may retry the request after an appropriate delay.
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 properties:
                   errors:
@@ -619,12 +656,13 @@ paths:
     post:
       summary: Makes a new match in the Lasagna Love system
       tags:
-      - Matches and match-related
+        - Matches and match-related
       requestBody:
         description: |
           Information about the new match to create.
 
-          The requester_id and recipient_id will be filled in from the request in the request_id and should not be supplied.
+          The requester_id and recipient_id will be filled in from the request in the request_id
+          and should not be supplied.
         required: true
         content:
           application/json:
@@ -633,17 +671,17 @@ paths:
       responses:
         # The return of the created match instead of just a Location header return is intentional here,
         # as many users of the Lasagna Love system will not have sufficient access to request a match by id
-        '201': # created
+        '201':  # created
           description: Returns the newly created match in the repsonse body.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/match'
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
 
   /match/{id}:
@@ -651,21 +689,29 @@ paths:
       summary: Returns the match specified by the supplied id.
         The logged in user must have sufficient permission to access the requested match
       tags:
-      - Matches and match-related
+        - Matches and match-related
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description:
+            The id of the match to return information for
       responses:
-        '200': # ok
+        '200':  # ok
           description: The match with the id specified in the request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/match'
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '404': # not found
+        '404':  # not found
           $ref: '#/components/responses/not_found'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
     patch:
       summary: Updates the match's specified fields with the values specified in the provided JSON body
@@ -673,9 +719,18 @@ paths:
         Updates the match with the id specified, changing every specified field in the provided JSON body to the value provided.
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
-        **id, creation_time, last_update_time, recipient_id, and requester_id values cannot be changed. A request specifying one of these fields will be rejected.**
+        **id, creation_time, last_update_time, recipient_id, and requester_id values cannot be changed.
+        A request specifying one of these fields will be rejected.**
       tags:
-      - Matches and match-related
+        - Matches and match-related
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description:
+            The id of the match to update
       requestBody:
         description: |
           The match updates to apply. These should be specified in JSON as a collection of key and value pairs -
@@ -689,35 +744,38 @@ paths:
             schema:
               $ref: '#/components/schemas/match'
             example:
-              { "volunteer_id" : 45678 }
+              {"volunteer_id": 45678}
       responses:
-        '204': # no content
+        '204':  # no content
           description: match was successfully updated.
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
 
   /matches:
     get:
-      summary: Returns an array of open matches for the currently logged in user, or an array of open matches from a query string
+      summary: Returns an array of open matches for the currently logged in user,
+        or an array of open matches from a query string
       description: By default, returns an array of 0 or more Matches containing the open matches
         for the user specified in the supplied JWT Authorization bearer token.
         When query parameters are used, returns an array of 0 or more Matches from the collection of Matches
         accessible to the user specified in the supplied JWT token and modified by the supplied parameters.
       tags:
-      - Matches and match-related
+        - Matches and match-related
       parameters:
         - in: query
           name: scope
           required: false
           schema:
             type: string
-            description: specifies the search scope for Matches to return. Will return all the Matches that are visible to the requesting user
+            description: specifies the search scope for Matches to return. Will return all the Matches
+              that are visible to the requesting user
               in the specified scope. When "all" is specified, returns all Matches that the user can access.
-              For example, a local leader specifying scope=all will receive all Matches for Requests in their assigned districts,
+              For example, a local leader specifying scope=all will receive all Matches for Requests
+              in their assigned districts,
               and a regional director specifying scope=all will receive all Matches for Requests in their Super Region.
               If this parameter is not specified, then only the current user's matches will be returned.
             enum: ["user", "district", "region", "all"]
@@ -739,21 +797,22 @@ paths:
               * all: matches with Requests containing any status
             enum: ["open", "delivered", "cancelled", "all"]
       responses:
-        '200': # ok
-          description: Array of open matches for the user represented by the supplied JWT token, or as specified by the query parameters.
+        '200':  # ok
+          description: Array of open matches for the user represented by the supplied JWT token,
+            or as specified by the query parameters.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                    $ref: '#/components/schemas/match'
-        '400': # bad request
+                  $ref: '#/components/schemas/match'
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '404': # not found
+        '404':  # not found
           $ref: '#/components/responses/not_found'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
 
   /profile:
@@ -763,16 +822,17 @@ paths:
         When query parameters are used, returns an array of 0 or more profiles from the collection of profiles
         accessible to the user specified in the supplied JWT token and modified by the supplied parameters.
       tags:
-      - User (requester, volunteer and administrator) profiles
+        - User (requester, volunteer and administrator) profiles
       parameters:
         - in: query
           name: type
           required: false
           schema:
             type: string
-            description: the types of profiles to return. Will return all the profiles of the given type that are visible to the requesting user
-              of the specified type - or all types if "all" is specified.
-              For example, a local leader specifying type=all will receive all profiles for all users in their assigned districts.
+            description: the types of profiles to return. Will return all the profiles of the given type
+              that are visible to the requesting user of the specified type - or all types if "all" is specified.
+              For example, a local leader specifying type=all will receive all profiles for all users
+              in their assigned districts.
               If this parameter is not specified, then only the current user's profile will be returned.
             enum: ["recipient", "requester", "chef", "leader", "director", "admin", "superadmin", "service", "all"]
         - in: query
@@ -781,12 +841,14 @@ paths:
           schema:
             type: string
             description: controls whether to return all eligible profiles (default), only active or only inactive profiles.
-              For example, a regional director specifying active=inactive will receive all profiles for all users in their Super Region,
-              who are inactive and that fit the type specifier provided in the query string.
+              For example, a regional director specifying active=inactive will receive all profiles
+              for all users in their Super Region, who are inactive and that fit the type specifier
+              provided in the query string.
             enum: ["active", "inactive", "all"]
       responses:
-        '200': # ok
-          description: The profile for the user represented by the supplied JWT token, or array of profiles specified by the query parameters.
+        '200':  # ok
+          description: The profile for the user represented by the supplied JWT token,
+            or array of profiles specified by the query parameters.
           content:
             application/json:
               schema:
@@ -795,13 +857,13 @@ paths:
                   - type: array
                     items:
                       $ref: '#/components/schemas/profile'
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '404': # not found
+        '404':  # not found
           $ref: '#/components/responses/not_found'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
     patch:
       summary: Updates the current user's specified profile fields with the values specified in the provided JSON body
@@ -810,13 +872,15 @@ paths:
         in the provided JSON body to the value provided.
 
         For embedded JSON objects, only the fields to update in those objects should be specified.
+
         *Example:* once a user watches the food safety training video, their profile can be updated to reflect this by
           providing the updated volunteer_info.attestations.volunteer_completed_safety_training field and value only.
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
-        **id, creation_time and last_update_time values cannot be changed. A request specifying one of these fields will be rejected.**
+        **id, creation_time and last_update_time values cannot be changed.
+          A request specifying one of these fields will be rejected.**
       tags:
-      - User (requester, volunteer and administrator) profiles
+        - User (requester, volunteer and administrator) profiles
       requestBody:
         description: |
           The profile updates to apply to the current user profile. These should be specified in JSON
@@ -824,32 +888,33 @@ paths:
 
           Values listed in the profile schema as required are not required for PATCH requests - **ONLY** fields
           to update should be provided.
+
+          See the profile object schema for a list of permitted fields and values.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/profile'
+              type: object
             example:
-              { "password" : "new password",
-                "volunteer_info" : {
-                  "attestations" : {
-                    "volunteer_completed_safety_training" : "2023-05-01"
-                  }
+              password: new password
+              volunteer_info: {
+                attestations: {
+                  volunteer_completed_safety_training: 2023-05-01
                 }
               }
       responses:
-        '204': # no content
+        '204':  # no content
           description: User profile was successfully updated.
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
     post:
       summary: Add a new user profile to the system
       tags:
-      - User (requester, volunteer and administrator) profiles
+        - User (requester, volunteer and administrator) profiles
       requestBody:
         description: Information about the new user to add
         required: true
@@ -871,7 +936,7 @@ paths:
               ]
               city: Tulsa
               state_or_province: OK
-              postal_code: 74127
+              postal_code: "74127"
               home_phone: (02) 1234 5678
               mobile_phone: +1 312 555-1212
               mobile_contact_permission: true
@@ -898,17 +963,17 @@ paths:
       responses:
         # The return of the created profile instead of just a Location header return is intentional here,
         # as many users of the Lasagna Love system will not have sufficient access to request a profile by id
-        '201': # created
+        '201':  # created
           description: Returns the newly created user profile in the repsonse body.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/profile'
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
     put:
       summary: Updates the current user profile so that it now contains the information in the specified profile body.
@@ -916,10 +981,11 @@ paths:
         Updates the profile for the user specified by the provided JWT token, changing all mutable non-password values
         to the values provided. Returns the updated user profile.
 
-        **Passwords cannot be changed with this method and will be ignored if specified. The PATCH method must be used to change passwords.**
+        **Passwords cannot be changed with this method and will be ignored if specified.
+        The PATCH method must be used to change passwords.**
         **id and creation_time and last_update_time values cannot be changed and will be ignored if speficied.**
       tags:
-      - User (requester, volunteer and administrator) profiles
+        - User (requester, volunteer and administrator) profiles
       requestBody:
         description: The updated profile to apply to this user.
         required: true
@@ -928,17 +994,17 @@ paths:
             schema:
               $ref: '#/components/schemas/profile'
       responses:
-        '200': # ok
+        '200':  # ok
           description: Returns the updated user profile in the repsonse body.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/profile'
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
 
   /profile/{id}:
@@ -946,24 +1012,33 @@ paths:
       summary: Returns the profile for the user specified by the supplied id.
         The logged in user must have sufficient permission to access the requested profile.
       tags:
-      - User (requester, volunteer and administrator) profiles
+        - User (requester, volunteer and administrator) profiles
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description:
+            The id of the profile to return information for
       responses:
-        '200': # ok
+        '200':  # ok
           description: The profile for the user matching the id provided.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/profile'
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '404': # not found
+        '404':  # not found
           $ref: '#/components/responses/not_found'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
     patch:
-      summary: Updates the profile for the user specified by the supplied id with the values specified in the provided JSON body.
+      summary: Updates the profile for the user specified by the supplied id with the values
+        specified in the provided JSON body.
         The logged in user must have sufficient permission to update the requested profile.
       description: |
         Updates the profile for the user specified by the provided id, changing every specified field
@@ -974,9 +1049,18 @@ paths:
           provide the updated volunteer_info.attestations.volunteer_completed_safety_training value key and value only.
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
-        **id, creation_time and last_update_time values cannot be changed. A request specifying one of these fields will be rejected.**
+        **id, creation_time and last_update_time values cannot be changed.
+          A request specifying one of these fields will be rejected.**
       tags:
-      - User (requester, volunteer and administrator) profiles
+        - User (requester, volunteer and administrator) profiles
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description:
+            The id of the profile to update
       requestBody:
         description: |
           The profile updates to apply to the current user profile. These should be specified in JSON
@@ -984,29 +1068,31 @@ paths:
 
           Values listed in the profile schema as required are not required for PATCH requests - **ONLY** fields
           to update should be provided.
+
+          See the profile object schema for a list of permitted fields and values.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/profile'
+              type:
+                object
             example:
-              { "password" : "new password",
-                "volunteer_info" : {
-                  "attestations" : {
-                    "volunteer_completed_safety_training" : "2023-05-01"
-                  }
+              password: new password,
+              volunteer_info: {
+                attestations: {
+                  volunteer_completed_safety_training: 2023-05-01
                 }
               }
       responses:
-        '204': # no content
+        '204':  # no content
           description: User profile was successfully updated.
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '404': # not found
+        '404':  # not found
           $ref: '#/components/responses/not_found'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
     put:
       summary: Updates the profile for the user specified by the supplied id.
@@ -1015,10 +1101,19 @@ paths:
         Updates the profile for the user specified by the provided id, changing all mutable non-password values
         to the values provided. Returns the updated user profile.
 
-        **Passwords cannot be changed with this method and will be ignored if specified. The PATCH method must be used to change passwords.**
+        **Passwords cannot be changed with this method and will be ignored if specified.
+          The PATCH method must be used to change passwords.**
         **id, creation_time and last_update_time values cannot be changed and will be ignored if speficied.**
       tags:
-      - User (requester, volunteer and administrator) profiles
+        - User (requester, volunteer and administrator) profiles
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description:
+            The id of the profile to update
       requestBody:
         description: The updated profile to apply to this user.
         required: true
@@ -1040,7 +1135,7 @@ paths:
               ]
               city: Tulsa
               state_or_province: OK
-              postal_code: 74127
+              postal_code: "74127"
               home_phone: (02) 1234 5678
               mobile_phone: +1 312 555-1212
               mobile_contact_permission: true
@@ -1050,6 +1145,7 @@ paths:
               recipient_info:
                 adult_count: 3
                 child_count: 1
+                dietary_restrictions: []
               attestations:
                 user_is_eighteen: true
                 user_accepted_email_communications: true
@@ -1057,19 +1153,19 @@ paths:
                 volunteer_accepted_volunteer_terms: 2021-04-11T07:11:04.332Z
                 volunteer_completed_safety_training: 2021-04-11T07:11:04.332Z
       responses:
-        '200': # ok
+        '200':  # ok
           description: Returns the updated user profile in the repsonse body.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/profile'
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '404': # not found
+        '404':  # not found
           $ref: '#/components/responses/not_found'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
 
   /request:
@@ -1082,17 +1178,19 @@ paths:
         When query parameters are used, returns an array of 0 or more requests from the collection of requests
         accessible to the user specified in the supplied JWT token and modified by the supplied parameters.
       tags:
-      - Meal requests
+        - Meal requests
       parameters:
         - in: query
           name: scope
           required: false
           schema:
             type: string
-            description: specifies the search scope for requests to return. Will return all the Requests that are visible to the requesting user
+            description: specifies the search scope for requests to return.
+              Will return all the Requests that are visible to the requesting user
               in the specified scope. When "all" is specified, returns all Requests that the user can access.
-              For example, a local leader specifying scope=all will receive all profiles for all users in their assigned districts,
-              and a regional director specifying scope=all will receive all Requests in their Super Region.
+              For example, a local leader specifying scope=all will receive all profiles for all users
+              in their assigned districts, and a regional director specifying scope=all will receive all Requests
+              in their Super Region.
               If this parameter is not specified, then only the current user's profile will be returned.
             enum: ["user", "district", "region", "all"]
         - in: query
@@ -1102,20 +1200,24 @@ paths:
             type: string
             description: controls whether to return all Requests (default); or Requests in one or more stages.
               Multiple stages can be specified in the stage parameter separated by commas.
-              For example, a regional director specifying stage=ingested,reviewed,accepted,backlog will receive all Requests
-              that have not yet been matched to any volunteer, in the scope of the 'scope' query parameter specified.
-            enum: ["ingested", "reviewed", "accepted", "backlog", "matched", "contacted", "scheduled", "delivered", "no_response", "no_longer_wanted", "all"]
+              For example, a regional director specifying stage=ingested,reviewed,accepted,backlog
+              will receive all Requests that have not yet been matched to any volunteer,
+              in the scope of the 'scope' query parameter specified.
+            enum: ["ingested", "reviewed", "accepted", "backlog", "matched",
+                   "contacted", "scheduled", "delivered", "no_response", "no_longer_wanted", "all"]
         - in: query
           name: user_id
           required: false
           schema:
             type: integer
-            description: specifies one or more users to return Requests for, narrowed by any other query parameters provided.
+            description: specifies one or more users to return Requests for,
+              narrowed by any other query parameters provided.
               Multiple user_id values can be specified in the user_id query parameter separated by commas.
-            example: user_id=1143
+            example: 1143
       responses:
-        '200': # ok
-          description: The most recent request created by the user represented by the supplied JWT token, or array of Requests specified by the query parameters.
+        '200':  # ok
+          description: The most recent request created by the user represented by the supplied JWT token,
+            or array of Requests specified by the query parameters.
           content:
             application/json:
               schema:
@@ -1124,57 +1226,57 @@ paths:
                   - type: array
                     items:
                       $ref: '#/components/schemas/request'
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '404': # not found
+        '404':  # not found
           $ref: '#/components/responses/not_found'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
     patch:
-      summary: Updates the most recent active request made by the currently logged in user with the values specified in the provided JSON body
+      summary: Updates the most recent active request made by the currently logged in user
+        with the values specified in the provided JSON body
       description: |
-        Updates the most recent active request for the user specified by the provided JWT token, changing every specified field
-        in the provided JSON body to the value provided.
+        Updates the most recent active request for the user specified by the provided JWT token,
+        changing every specified field in the provided JSON body to the value provided.
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
-        **id, creation_time and last_update_time values cannot be changed. A request specifying one of these fields will be rejected.**
+        **id, creation_time and last_update_time values cannot be changed.
+        A request specifying one of these fields will be rejected.**
       tags:
-      - Meal requests
+        - Meal requests
       requestBody:
         description: |
           The updates to apply to the most recent active request made by the user specified by the provided JWT login.
-          These should be specified in JSON as a collection of key and value pairs - each representing a field name to change and the new value to apply.
+          These should be specified in JSON as a collection of key and value pairs -
+          each representing a field name to change and the new value to apply.
 
-          Values listed in the request schema as required are not required for PATCH requests - **ONLY** fields to update should be provided.
+          Values listed in the request schema as required are not required for PATCH requests -
+          **ONLY** fields to update should be provided.
+
+          See the request object schema for the list of permitted fields for updates.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/request'
-            example: |
-              This example allows a user to indicate they no longer want their most recently made meal request -
-              { "password" : "new password",
-                "volunteer_info" : {
-                  "attestations" : {
-                    "volunteer_completed_safety_training" : "2023-05-01"
-                  }
-                }
-              }
+              type:
+                object
+            example:
+              stage: delivered
       responses:
-        '204': # no content
+        '204':  # no content
           description: Most recent active request for the user was successfully updated.
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
     post:
       summary: Creates a new request for the currently logged in user.
       tags:
-      - Meal requests
+        - Meal requests
       requestBody:
         description: Information about the new request to add.
         required: true
@@ -1185,27 +1287,28 @@ paths:
       responses:
         # The return of the created request instead of just a Location header return is intentional here,
         # as many users of the Lasagna Love system may not have sufficient access to access a request by id
-        '201': # created
+        '201':  # created
           description: Returns the newly created request in the repsonse body.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/request'
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
     put:
-      summary: Updates the most recent active request made by the currently logged in user, so that it now contains the information in the specified profile body.
+      summary: Updates the most recent active request made by the currently logged in user,
+        so that it now contains the information in the specified profile body.
       description: |
-        Updates the most recent active request for the user specified by the provided JWT token, changing all mutable values
-        to the values provided. Returns the updated request.
+        Updates the most recent active request for the user specified by the provided JWT token,
+        changing all mutable values to the values provided. Returns the updated request.
 
         **id, creation_time and last_update_time values cannot be changed and will be ignored if speficied.**
       tags:
-      - Meal requests
+        - Meal requests
       requestBody:
         description: The updated request in its full state.
         required: true
@@ -1214,49 +1317,68 @@ paths:
             schema:
               $ref: '#/components/schemas/request'
       responses:
-        '200': # ok
+        '200':  # ok
           description: Returns the updated request in full.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/request'
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
 
   /request/{id}:
     get:
-      summary: Returns the request specified by the supplied id. The logged in user must have sufficient permission to access the specified request.
+      summary: Returns the request specified by the supplied id.
+        The logged in user must have sufficient permission to access the specified request.
       tags:
-      - Meal requests
+        - Meal requests
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description:
+            The id of the request to return information for
       responses:
-        '200': # ok
+        '200':  # ok
           description: The request matching the id provided.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/request'
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '404': # not found
+        '404':  # not found
           $ref: '#/components/responses/not_found'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
     patch:
       summary: Updates the request specified by the supplied id with the values specified in the provided JSON body.
         The logged in user must have sufficient permission to update the specified request.
       description: |
-        Updates the request specified by the provided id, changing every specified field in the provided JSON body to the value provided.
+        Updates the request specified by the provided id, changing every specified field in the provided JSON body
+        to the value provided.
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
-        **id, creation_time, and last_update_time values cannot be changed. A request specifying one of these fields will be rejected.**
+        **id, creation_time, and last_update_time values cannot be changed.
+        A request specifying one of these fields will be rejected.**
       tags:
-      - Meal requests
+        - Meal requests
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description:
+            The id of the request to update
       requestBody:
         description: |
           The profile updates to apply to the specified request. These should be specified in JSON
@@ -1264,33 +1386,44 @@ paths:
 
           Values listed in the request schema as required are not required for PATCH requests - **ONLY** fields
           to update should be provided.
+          See the request object schema for the list of permitted fields for updates.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/request'
+              type:
+                object
             example:
-              { "stage" : "matched" }
+              {"stage": "matched"}
       responses:
-        '204': # no content
+        '204':  # no content
           description: request was successfully updated.
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '404': # not found
+        '404':  # not found
           $ref: '#/components/responses/not_found'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'
     put:
       summary: Updates the request specified by the supplied id.
         The logged in user must have sufficient permission to update the specified request.
       description: |
-        Updates the request specified by the provided id, changing all mutable values to the values provided. Returns the updated request.
+        Updates the request specified by the provided id, changing all mutable values to the values provided.
+        Returns the updated request.
 
         **id, creation_time and last_update_time values cannot be changed and will be ignored if speficied.**
       tags:
-      - Meal requests
+        - Meal requests
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description:
+            The id of the request to update
       requestBody:
         description: The updated request in full.
         required: true
@@ -1299,17 +1432,17 @@ paths:
             schema:
               $ref: '#/components/schemas/request'
       responses:
-        '200': # ok
+        '200':  # ok
           description: Returns the updated request in the repsonse body.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/request'
-        '400': # bad request
+        '400':  # bad request
           $ref: '#/components/responses/bad_request'
-        '401': # unauthorized
+        '401':  # unauthorized
           $ref: '#/components/responses/unauthorized'
-        '404': # not found
+        '404':  # not found
           $ref: '#/components/responses/not_found'
-        '500': # internal server error
+        '500':  # internal server error
           $ref: '#/components/responses/internal_server_error'

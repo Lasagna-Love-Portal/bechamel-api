@@ -62,7 +62,7 @@ func postUserProfile(c *gin.Context) {
 		return
 	}
 
-	if err := c.BindJSON(&newUserProfile); err != nil {
+	if err = c.BindJSON(&newUserProfile); err != nil {
 		if err.Error() == "EOF" {
 			c.JSON(http.StatusBadRequest, gin.H{"errors": []string{"Missing or unparsable JSON body"}})
 		} else {
