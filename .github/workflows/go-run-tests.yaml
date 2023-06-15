@@ -1,5 +1,5 @@
 name: Run Go unit tests
-on:
+on:  # yamllint disable-line rule:truthy
     push:
         branches: ["dev", "main", "mattkuznicki-ll/super-linter-addition"]
     pull_request:

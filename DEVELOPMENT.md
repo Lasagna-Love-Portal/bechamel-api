@@ -32,7 +32,7 @@ sudo apt-get install golang # Linux
 
 After installing Go, download the `goimports` package:
 
-```
+```bash
 go install golang.org/x/tools/cmd/goimports@latest
 ```
 
@@ -149,13 +149,13 @@ putting your pull requests out for review.
 
 You can run this locally using Docker. First, obtain the Super Linter Docker container:
 
-   ```
+   ```bash
    docker pull github/super-linter:latest
    ```
 
 Then you can use Docker to run the super-linter. To run against all the files in the project directory, from the top level bechamel-api directory:
 
-   ```
+   ```bash
    docker run -e RUN_LOCAL=true -v .:/tmp/lint github/super-linter
    ```
 
@@ -164,8 +164,15 @@ in the environment variable FILTER_REGEX_INCLUDE. Or to exclude file(s) pass an 
 regular expression in the FILTER_REGEX_EXCLUDE environment variable.
 For example, to only lint the file DEVELOPMENT.md in the top level directory:
 
-   ```
+   ```bash
    docker run -e RUN_LOCAL=true -e FILTER_REGEX_INCLUDE=DEVELOPMENT.md -v .:/tmp/lint github/super-linter
+   ```
+
+You can also use the `super-linter.env` file in the root of the project to store environment variables
+to pass to the `docker` invocation. Use the `--env-file` flag to pass the file:
+
+   ```bash
+   docker run --env-file super-linter.env -v ./tmp/lint github/super-linter
    ```
 
 See the [super-linter GitHub repository](https://github.com/github/super-linter/blob/main/README.md#filter-linted-files)
@@ -197,15 +204,15 @@ go mod tidy
 
 If you get super-linter errors about files not being goimportes-ed, such as:
 
-```
-api_profile.go:1: File is not `goimports`-ed (goimports)
-```
+   ```bash
+   api_profile.go:1: File is not `goimports`-ed (goimports)
+   ```
 
 Make sure you have the goimports package as detailed in [Go language installation (if absent)](#go-language-installation-if-absent). Run the goimports program on the file:
 
-```
-goimports -local [filename] -w .
-```
+   ```bash
+   goimports -local [filename] -w .
+   ```
 
 This should fix up the ordering of imports in the file.
 
