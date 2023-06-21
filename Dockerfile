@@ -27,8 +27,6 @@ RUN CGO_ENABLED=0 go install -ldflags "-s -w -extldflags '-static'" github.com/g
 RUN CGO_ENABLED=0 GOOS=linux go build -gcflags "all=-N -l" -o /bechamel-api-localdev-server .
 # Start the Delve server on port 4000
 CMD [ "/go/bin/dlv", "--listen=:4000", "--headless=true", "--log=true", "--accept-multiclient", "--api-version=2", "exec", "/bechamel-api-localdev-server" ]
-# CMD ["/bechamel-api-localdev-server"]
-
 
 ##########
 # Configuration for Azure-deployed dev instance

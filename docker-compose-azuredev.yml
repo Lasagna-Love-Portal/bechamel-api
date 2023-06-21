@@ -3,7 +3,7 @@ version: '3'
 services:
   backend:
     build:
-      image: bechamel-api-server:azuredev
+      image: bechamel-api-backend-azuredev:latest
       context: .
       target: dev-azuredeploy
     ports:
