@@ -27,7 +27,7 @@ func main() {
 	router.GET("/request/:requestID", getRequestByID)
 	router.POST("/request", postRequest)
 
-	if err := router.Run("localhost:8080"); err != nil {
+	if err := router.Run("0.0.0.0:8080"); err != nil {
 		log.Fatal(fmt.Errorf("could not start Gin server: %w", err))
 	}
 }
