@@ -11,7 +11,7 @@ info:
 
 
     The API described here is a **PROPOSAL** and is **NOT YET IMPLEMENTED**.
-  version: 0.0.5
+  version: 0.0.6
 
 components:
   securitySchemes:
@@ -75,6 +75,11 @@ components:
           description: id for this user. Non-mutable, read-only value with no guaranteed semantics.
           readOnly: true
           example: 1234
+        email:
+          type: string
+          description: Email address for this user. This email address will be the address used to authenticate (login),
+            to communicate with the user, to send password reset requests to, and for other Lasagna Love purposes.
+          example: georgenewman@example.com
         roles:
           type: array
           description: |
@@ -112,21 +117,11 @@ components:
               - superadmin
               - service
           example: ["chef"]
-        username:
-          type: string
-          description: Username for the user. This is the value to supply to the authentication API
-            to authenticate the user.
-          example: UHFStationOwner
         password:
           type: string
           description: Placeholder for this user's password. Write-only for creating or updating users.
             A blank string is returned when retrieving a user profile instead of the user's password.
           example: ""
-        email:
-          type: string
-          description: Email address for this user. This email address will be the address used to communicate
-            with the user, to send password reset requests to, and for other Lasagna Love purposes.
-          example: georgenewman@example.com
         email_validated:
           type: boolean
           description: true if the user's email address was successfully validated by the Lasagna Love system,
@@ -188,6 +183,10 @@ components:
 
             Australia - this is the three letter abbreviation of the territory, e.g. NSA for New South Wales
           example: OK
+        country:
+          type: string
+          description: The ISO 3166 two letter country code for the country the user resides in.
+          example: US
         postal_code:
           type: string
           description: The postal code the user resides in.
@@ -252,15 +251,15 @@ components:
         volunteer_info:
           $ref: '#/components/schemas/volunteer_info'
       required:
-        - roles
-        - username
-        - password
         - email
+        - roles
+        - password
         - given_name
         - family_name
         - street_address
         - city
         - state_or_province
+        - country
         - postal_code
         - mobile_phone
 
@@ -596,7 +595,7 @@ paths:
               type: object
               oneOf:
                 - properties:
-                    username:
+                    email:
                       type: string
                     password:
                       type: string
@@ -606,7 +605,7 @@ paths:
       responses:
         # NOTE: the returned responses from this endpoint are intentionally not the shared API responses.
         '200':  # ok
-          description: Generated JWT token for the provided username and password
+          description: Generated JWT token for the provided email address and password
           content:
             application/json:
               schema:
@@ -923,10 +922,9 @@ paths:
             schema:
               $ref: '#/components/schemas/profile'
             example:
-              roles: ["chef"]
-              username: UHFStationOwner
-              password: PasswordForTheUser
               email: georgenewman@example.com
+              roles: ["chef"]
+              password: PasswordForTheUser
               email_validated: false
               given_name: George
               family_name: Newman
@@ -937,6 +935,7 @@ paths:
               city: Tulsa
               state_or_province: OK
               postal_code: "74127"
+              country: US
               home_phone: (02) 1234 5678
               mobile_phone: +1 312 555-1212
               mobile_contact_permission: true
@@ -1123,9 +1122,8 @@ paths:
               $ref: '#/components/schemas/profile'
             example:
               roles: ["recipient"]
-              username: UHFStationOwner
-              password: PasswordForTheUser
               email: georgenewman@example.com
+              password: PasswordForTheUser
               email_validated: false
               given_name: George
               family_name: Newman
@@ -1136,6 +1134,7 @@ paths:
               city: Tulsa
               state_or_province: OK
               postal_code: "74127"
+              country: US
               home_phone: (02) 1234 5678
               mobile_phone: +1 312 555-1212
               mobile_contact_permission: true
