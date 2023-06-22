@@ -876,6 +876,11 @@ paths:
           providing the updated volunteer_info.attestations.volunteer_completed_safety_training field and value only.
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
+
+        **If you change the user's email address with this method, the user's access and refresh tokens
+          will no longer be valid. The /login API will need to be called with the new email address
+          to generate new access and refresh tokens.**
+
         **id, creation_time and last_update_time values cannot be changed.
           A request specifying one of these fields will be rejected.**
       tags:
@@ -980,8 +985,13 @@ paths:
         Updates the profile for the user specified by the provided JWT token, changing all mutable non-password values
         to the values provided. Returns the updated user profile.
 
+        **If you change the user's email address with this method, the user's access and refresh tokens
+          will no longer be valid. The /login API will need to be called with the new email address
+          to generate new access and refresh tokens.**
+
         **Passwords cannot be changed with this method and will be ignored if specified.
         The PATCH method must be used to change passwords.**
+
         **id and creation_time and last_update_time values cannot be changed and will be ignored if speficied.**
       tags:
         - User (requester, volunteer and administrator) profiles
@@ -1048,6 +1058,11 @@ paths:
           provide the updated volunteer_info.attestations.volunteer_completed_safety_training value key and value only.
 
         Do **NOT** specify null or empty values unless intending to remove the value for a field.
+
+        **If you change the user's email address with this method, the user's access and refresh tokens
+          will no longer be valid. The /login API will need to be called with the new email address
+          to generate new access and refresh tokens.**
+
         **id, creation_time and last_update_time values cannot be changed.
           A request specifying one of these fields will be rejected.**
       tags:
@@ -1100,8 +1115,13 @@ paths:
         Updates the profile for the user specified by the provided id, changing all mutable non-password values
         to the values provided. Returns the updated user profile.
 
+        **If you change the user's email address with this method, the user's access and refresh tokens
+          will no longer be valid. The /login API will need to be called with the new email address
+          to generate new access and refresh tokens.**
+
         **Passwords cannot be changed with this method and will be ignored if specified.
           The PATCH method must be used to change passwords.**
+
         **id, creation_time and last_update_time values cannot be changed and will be ignored if speficied.**
       tags:
         - User (requester, volunteer and administrator) profiles
