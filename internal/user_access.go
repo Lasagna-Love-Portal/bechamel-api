@@ -81,21 +81,29 @@ func AddNewUser(newUserProfile model.LasagnaLoveUser) (model.LasagnaLoveUser, er
 func UpdateUser(userID int, updates map[string]any) (model.LasagnaLoveUser, error) {
 	didMakeUpdates := false
 
-	currentUserProfile, err := GetUserByID(userID)
+	var currentUserProfile model.LasagnaLoveUser
+	_, err := GetUserByID(userID)
 	if err != nil {
 		return model.LasagnaLoveUser{}, errors.New("could not obtain user for supplied ID")
 	}
+
+	// The double loop here is intentional - this is to prevent partial updates
+	// by making sure all fields supplied are valid before making any updates
 	for key := range updates {
 		rfl := reflect.ValueOf(&currentUserProfile).Elem()
 		if fld := rfl.FieldByName(key); !fld.IsValid() {
 			return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for update")
 		}
+		// TODO: unaccepted field handling
+		// TODO: nested types/type ptrs (e.g. attestations)
 	}
 
 	// TODO: adding and updating will likely need to be datastore dependent and not common.
 	// For the integrated fixed data, note the switch to directly accessing the LasagnaLoveUsersDummyData here.
 	// TODO: need to set the referenced data structures as well, otherwise they need to be filled in full?
 	for key, value := range updates {
+		// TODO: password handling
+		// TODO: nested types/type ptrs (e.g. attestations)
 		reflect.ValueOf(&LasagnaLoveUsersDummyData[userID-1]).Elem().FieldByName(key).Set(reflect.ValueOf(value))
 		didMakeUpdates = true
 	}

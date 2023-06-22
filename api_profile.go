@@ -1,13 +1,16 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"project-ricotta/bechamel-api/internal"
 	"project-ricotta/bechamel-api/model"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/iancoleman/strcase"
 )
 
 // TODO: return something more useful for error messages
@@ -45,6 +48,61 @@ func getUserProfileByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, userProfile)
+}
+
+func patchCurrentUserProfile(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+	_, err := internal.GetUserFromAuthHeader(authHeader)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"errors": []string{"Invalid access token provided"}})
+		return
+	}
+}
+
+func patchUserProfileByID(c *gin.Context) {
+	snakeCaseProfileUpdates := make(map[string]any)
+	pascalCaseProfileUpdates := make(map[string]any)
+
+	authHeader := c.GetHeader("Authorization")
+	_, err := internal.GetUserFromAuthHeader(authHeader)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"errors": []string{"Invalid access token provided"}})
+		return
+	}
+
+	userID, err := strconv.Atoi(c.Params.ByName("userID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"errors": []string{"Could not parse id for user profile to retrieve"}})
+		return
+	}
+
+	_, err = internal.GetUserByID(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest,
+			gin.H{"errors": []string{"Could not retrieve user profile for specified user id"}})
+		return
+	}
+
+	bodyAsByteArray, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"errors": []string{"Error parsing supplied message body"}})
+		return
+	}
+	json.Unmarshal(bodyAsByteArray, &snakeCaseProfileUpdates)
+
+	// TODO: there's likely a better way to put this map together?
+	// Or at least collect this and a bit of above into a util func
+	for key, value := range snakeCaseProfileUpdates {
+		pascalCaseProfileUpdates[strcase.ToCamel(key)] = value
+	}
+
+	updatedUserProfile, err := internal.UpdateUser(userID, pascalCaseProfileUpdates)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"errors": []string{err.Error()}})
+		return
+	}
+	// TODO: do we return HTTP 200 and updated, or 204 and no content?
+	c.JSON(http.StatusOK, updatedUserProfile)
 }
 
 // TODO: should an API key or similar be required to POST a request to create a new user?

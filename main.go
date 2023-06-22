@@ -22,8 +22,10 @@ func main() {
 	router.Use(cors.New(corsConfig))
 	router.POST("/login", postUserAuthorization)
 	router.GET("/profile", getCurrentUserProfile)
-	router.GET("/profile/:userID", getUserProfileByID)
+	router.PATCH("/profile", patchCurrentUserProfile)
 	router.POST("/profile", postUserProfile)
+	router.GET("/profile/:userID", getUserProfileByID)
+	router.PATCH("/profile/:userID", patchUserProfileByID)
 	router.GET("/request/:requestID", getRequestByID)
 	router.POST("/request", postRequest)
 
