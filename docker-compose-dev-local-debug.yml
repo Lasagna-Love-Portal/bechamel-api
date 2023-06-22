@@ -8,9 +8,9 @@ services:
   backend:
     build:
       context: .
-      target: dev
+      target: dev-docker-local-debug
       tags:
-        - bechamel-api-backend-localdev:latest
+        - bechamel-api-dev-docker-local-debug:latest
     ports:
       - '4000:4000'
       - '8080:8080'

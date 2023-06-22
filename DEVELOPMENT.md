@@ -12,8 +12,6 @@
     - [Building the project locally](#building-the-project-locally)
     - [Running the server locally](#running-the-server-locally)
   - [Developing locally with Docker](#developing-locally-with-docker)
-    - [Building and running the Docker container](#building-and-running-the-docker-container)
-    - [Debugging the app in the Docker container](#debugging-the-app-in-the-docker-container)
     - [Viewing container logs](#viewing-container-logs)
   - [Running unit tests](#running-unit-tests)
   - [Writing test functions](#writing-unit-tests)
@@ -91,9 +89,7 @@ You may stop the server with `Ctrl+C`.
 
 ### Developing locally with Docker
 
-First, make sure `docker` is installed.
-
-For Windows users:
+First, make sure `docker` is installed. For Windows users:
 You can install Docker Desktop from [Docker](https://docs.docker.com/desktop/install/windows-install/).
 When running on Windows, you'll need to ensure the Windows Subsystem for Linux (WSL) is installed and updated to WSL version 2. To do this:
 1. Open a Powershell windows as administrator
@@ -105,23 +101,30 @@ When running on Windows, you'll need to ensure the Windows Subsystem for Linux (
 In Docker Desktop's Settings | Resources | WSL integration, make sure the Ubuntu 22.04 distribution is enabled.
 You may need to hit Refresh and wait a minute or two for it to show. Once enabled, hit Apply & Restart to restart the Docker engine.
 
-#### Building and running the Docker container
+The Docker configuration for debugging the Bechamel API server with a debugger
+is different from that for running the Bechamel API server without a debugger.
 
-To run the local-based Docker container for debugging:
-1. `docker compose --file docker-compose-localdev.yml up --build --wait --detach` at the root of the repository.
-2. Make a request to the app (`curl`, or in Postman or your favorite tool) at `localhost:8080`.
-3. `docker compose --file docker-compose-localdev.yml down` to stop the container.
+To debug the local-based Docker container:
+1. `docker compose --file docker-compose-dev-local-debug.yml up --build --wait --detach` at the root of the repository.
+2. Attach a debugger such as Visual Studio Code. **You must instantiate a debugging section in order for the program to run.**
+3. Make a request to the app (`curl`, or in Postman or your favorite tool) at `localhost:8080`.
+4. When finished, run `docker compose --file docker-compose-dev-local-debug.yml down` to stop the container.
 
-To run the Azure dev deployment, use the docker-compose-azuredev.yml file instead.
-
-#### Debugging the app in the Docker container
-
-You can use Visual Studio Code or other tools to debug when developing locally with the Docker container.
-The Docker container composition in docker-compose-localdev.yml is set up to enable this for VS Code.
 Once the Docker container is running as per above, you can use the "Local Docker App Debug" configuration in
 the `Run and Debug` tab to connect to the debugger.
 
 [For JetBrains usage ; untested](https://www.jetbrains.com/help/go/attach-to-running-go-processes-with-debugger.html#step-1-create-a-dockerfile-configuration)
+
+
+To run the local-based Docker container without debugging:
+1. `docker compose --file docker-compose-dev-local-run.yml up --build --wait --detach` at the root of the repository.
+2. Make a request to the app (`curl`, or in Postman or your favorite tool) at `localhost:8080`.
+3. When finished, run `docker compose --file docker-compose-dev-local-run.yml down` to stop the container.
+
+**Note** the different YAML filenames used to compose the Docker containers above.
+
+
+**Untested, incomplete** To run the Azure dev deployment, use the docker-compose-dev-azure-deploy.yml file instead.
 
 #### Viewing container logs
 

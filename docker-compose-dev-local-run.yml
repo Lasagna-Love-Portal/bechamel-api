@@ -1,0 +1,34 @@
+version: '3'
+
+# This Docker compose file and the Dockerfile entries for the dev configuration
+# are based on information from https://dev.to/bruc3mackenzi3/debugging-go-inside-docker-using-vscode-4f67
+
+# DO NOT USE THIS CONFIGURATION for anything other than local Docker-based development
+services:
+  backend:
+    build:
+      context: .
+      target: dev-docker-local-run
+      tags:
+        - bechamel-api-dev-docker-local-run:latest
+    ports:
+      - '8080:8080'
+    # File watching https://docs.docker.com/compose/file-watch/
+    # Note: not yet functioning
+    x-develop:
+      watch:
+        - path: .
+          target: /app
+          action: rebuild
+        - path: ./config
+          target: /app/config
+          action: rebuild
+        - path: ./documentation
+          target: /app/documentation
+          action: sync
+        - path: ./internal
+          target: /app/internal
+          action: rebuild
+        - path: ./model
+          target: /app/model
+          action: rebuild

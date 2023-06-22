@@ -3,8 +3,8 @@ version: '3'
 services:
   backend:
     build:
-      image: bechamel-api-backend-azuredev:latest
+      image: bechamel-api-dev-azure-deploy:latest
       context: .
-      target: dev-azuredeploy
+      target: dev-azure-deploy
     ports:
       - '8080:8080'
