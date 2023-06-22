@@ -14,12 +14,11 @@ import (
 var LasagnaLoveUsersDummyData = []model.LasagnaLoveUser{
 	{
 		ID:                      1,
+		Email:                   "testuser1@example.com",
 		Roles:                   []string{"chef"},
-		Username:                "TestUser1",
 		Password:                "EsX3b/B4fCYGb2+iAs4fAIXQtiq3EydUDi03ECVvTEE=", // "password1, hashed"
 		GivenName:               "Test",
 		FamilyName:              "UserOne",
-		Email:                   "testuser1@example.com",
 		EmailValidated:          true,
 		CreationTime:            "2023-04-11T07:11:04.332Z",
 		LastUpdateTime:          "2023-06-06T13:00:00.000Z",
@@ -49,12 +48,11 @@ var LasagnaLoveUsersDummyData = []model.LasagnaLoveUser{
 	},
 	{
 		ID:                      2,
+		Email:                   "testuser2@example.com",
 		Roles:                   []string{"requester", "recipient"},
-		Username:                "TestUser2",
 		Password:                "TnhbYUymFq5gr1jvyw1AmTviqlp3sYp7t0VxfT7ut1M=", // "password2", hashed
 		GivenName:               "Test",
 		FamilyName:              "UserTwo",
-		Email:                   "testuser2@example.com",
 		EmailValidated:          true,
 		CreationTime:            "2023-05-16T06:44:19.794Z",
 		LastUpdateTime:          "2023-06-06T13:00:00.000Z",

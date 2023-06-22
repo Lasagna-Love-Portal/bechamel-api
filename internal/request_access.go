@@ -9,7 +9,6 @@ package internal
 import (
 	"errors"
 	"project-ricotta/bechamel-api/model"
-	"time"
 )
 
 func findRequest(requestFilter func(model.LasagnaLoveRequest) bool) (model.LasagnaLoveRequest, error) {
@@ -46,10 +45,7 @@ func AddNewRequest(newRequest model.LasagnaLoveRequest) (model.LasagnaLoveReques
 	if newRequest.Type == "" {
 		newRequest.Type = "meal"
 	}
-	// NOTE: this is not an arbitrary formatting string, this is required format string
-	// to get time created in ISO 8601 simplified extended format as returned
-	// by JavaScript's toISOString() function.
-	newRequest.CreationTime = time.Now().UTC().Format("2006-01-02T15:04:05.000Z0700")
+	newRequest.CreationTime = CurrentTimeAsISO8601String()
 	newRequest.LastUpdateTime = newRequest.CreationTime
 
 	LasagnaLoveRequests_DummyData = append(LasagnaLoveRequests_DummyData, newRequest)

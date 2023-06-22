@@ -10,7 +10,7 @@ package model
 // with the same gin Context, which seems to prevent checking
 // against two JSON schemas in succession
 type LasagnaLoveAuthRequest struct {
-	Username     string `json:"username"`
+	Email        string `json:"email"`
 	Password     string `json:"password"`
 	RefreshToken string `json:"refresh_token"`
 }

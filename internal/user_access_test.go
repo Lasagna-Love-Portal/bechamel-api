@@ -26,7 +26,7 @@ func TestAuthorizeUser(t *testing.T) {
 	tests := []userTestType{
 		{
 			name:    "Correct credentials",
-			call:    func() (model.LasagnaLoveUser, error) { return AuthorizeUser("TestUser1", "password1") },
+			call:    func() (model.LasagnaLoveUser, error) { return AuthorizeUser("testuser1@example.com", "password1") },
 			wantErr: false,
 		},
 		{
@@ -54,29 +54,12 @@ func TestGetUserByID(t *testing.T) {
 	runUserTests(t, tests)
 }
 
-func TestGetUserByUserName(t *testing.T) {
-	tests := []userTestType{
-		{
-			name:    "Existing username",
-			call:    func() (model.LasagnaLoveUser, error) { return GetUserByUserName("TestUser1") },
-			wantErr: false,
-		},
-		{
-			name:    "Non-existing username",
-			call:    func() (model.LasagnaLoveUser, error) { return GetUserByUserName("NonExistingUser") },
-			wantErr: true,
-		},
-	}
-	runUserTests(t, tests)
-}
-
 func TestAddNewUser(t *testing.T) {
 	tests := []userTestType{
 		{
 			name: "Add new user with insufficient data",
 			call: func() (model.LasagnaLoveUser, error) {
 				return AddNewUser(model.LasagnaLoveUser{
-					Username:   "TestUser3",
 					Password:   "password3",
 					GivenName:  "Test",
 					FamilyName: "UserThree",
@@ -89,9 +72,8 @@ func TestAddNewUser(t *testing.T) {
 			call: func() (model.LasagnaLoveUser, error) {
 				return AddNewUser(model.LasagnaLoveUser{
 					Roles:           []string{"chef", "invalid"},
-					Username:        "TestUser-invalid role",
-					Password:        "password3",
 					Email:           "testuser3@example.com",
+					Password:        "password3",
 					GivenName:       "Test",
 					FamilyName:      "UserThree",
 					StreetAddress:   []string{"111 Testing Plaza", "Suite 1"},
@@ -103,30 +85,18 @@ func TestAddNewUser(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "Add user with duplicated Username",
-			call: func() (model.LasagnaLoveUser, error) {
-				return AddNewUser(model.LasagnaLoveUser{
-					Username:   "TestUser1",
-					Password:   "password1",
-					GivenName:  "Test",
-					FamilyName: "UserOne",
-				})
-			},
-			wantErr: true,
-		},
-		{
 			name: "Add new user",
 			call: func() (model.LasagnaLoveUser, error) {
 				return AddNewUser(model.LasagnaLoveUser{
 					Roles:           []string{"chef"},
-					Username:        "TestUser3",
-					Password:        "password3",
 					Email:           "testuser3@example.com",
+					Password:        "password3",
 					GivenName:       "Test",
 					FamilyName:      "UserThree",
 					StreetAddress:   []string{"111 Testing Plaza", "Suite 1"},
 					City:            "Anywhere",
 					StateOrProvince: "AB",
+					Country:         "US",
 					PostalCode:      "T5B 6W2",
 					MobilePhone:     "780-555-1212",
 				})
@@ -138,9 +108,8 @@ func TestAddNewUser(t *testing.T) {
 			call: func() (model.LasagnaLoveUser, error) {
 				return AddNewUser(model.LasagnaLoveUser{
 					Roles:           []string{"chef"},
-					Username:        "newtestuser3",
-					Password:        "password3",
 					Email:           "testuser3@example.com",
+					Password:        "password3",
 					GivenName:       "Test",
 					FamilyName:      "UserThree",
 					StreetAddress:   []string{"111 Testing Plaza", "Suite 1"},

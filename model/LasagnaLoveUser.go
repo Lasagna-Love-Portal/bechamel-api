@@ -4,19 +4,19 @@ import "encoding/json"
 
 type LasagnaLoveUser struct {
 	ID                      int                       `json:"id"`
+	Email                   string                    `json:"email"`
 	Roles                   []string                  `json:"roles"`
-	Username                string                    `json:"username"`
 	Password                string                    `json:"password"`
 	GivenName               string                    `json:"given_name"`
 	MiddleOrMaidenName      string                    `json:"middle_or_maiden_name,omitempty"`
 	FamilyName              string                    `json:"family_name"`
-	Email                   string                    `json:"email"`
 	EmailValidated          bool                      `json:"email_validated"`
 	CreationTime            string                    `json:"creation_time"`
 	LastUpdateTime          string                    `json:"last_update_time"`
 	StreetAddress           []string                  `json:"street_address"`
 	City                    string                    `json:"city"`
 	StateOrProvince         string                    `json:"state_or_province"`
+	Country                 string                    `json:"country"`
 	PostalCode              string                    `json:"postal_code"`
 	HomePhone               string                    `json:"home_phone,omitempty"`
 	MobilePhone             string                    `json:"mobile_phone"`
