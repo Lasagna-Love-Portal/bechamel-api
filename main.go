@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"project-ricotta/bechamel-api/config"
 
@@ -29,7 +28,5 @@ func main() {
 	router.GET("/request/:requestID", getRequestByID)
 	router.POST("/request", postRequest)
 
-	if err := router.Run("0.0.0.0:8080"); err != nil {
-		log.Fatal(fmt.Errorf("could not start Gin server: %w", err))
-	}
+	log.Fatal(router.Run("0.0.0.0:8080"))
 }
