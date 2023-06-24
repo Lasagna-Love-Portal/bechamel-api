@@ -19,14 +19,29 @@ func main() {
 	corsConfig.AllowAllOrigins = true
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, "authorization")
 	router.Use(cors.New(corsConfig))
-	router.POST("/login", postUserAuthorization)
-	router.GET("/profile", getCurrentUserProfile)
-	router.PATCH("/profile", patchCurrentUserProfile)
-	router.POST("/profile", postUserProfile)
-	router.GET("/profile/:userID", getUserProfileByID)
-	router.PATCH("/profile/:userID", patchUserProfileByID)
-	router.GET("/request/:requestID", getRequestByID)
-	router.POST("/request", postRequest)
+
+	dev := router.Group("/dev")
+	{
+		dev.POST("/login", postUserAuthorization)
+		dev.GET("/profile", getCurrentUserProfile)
+		dev.PATCH("/profile", patchCurrentUserProfile)
+		dev.POST("/profile", postUserProfile)
+		dev.GET("/profile/:userID", getUserProfileByID)
+		dev.PATCH("/profile/:userID", patchUserProfileByID)
+		dev.GET("/request/:requestID", getRequestByID)
+		dev.POST("/request", postRequest)
+	}
+	v0 := router.Group("/v0")
+	{
+		v0.POST("/login", postUserAuthorization)
+		v0.GET("/profile", getCurrentUserProfile)
+		v0.PATCH("/profile", patchCurrentUserProfile)
+		v0.POST("/profile", postUserProfile)
+		v0.GET("/profile/:userID", getUserProfileByID)
+		v0.PATCH("/profile/:userID", patchUserProfileByID)
+		v0.GET("/request/:requestID", getRequestByID)
+		v0.POST("/request", postRequest)
+	}
 
 	log.Fatal(router.Run("0.0.0.0:8080"))
 }
