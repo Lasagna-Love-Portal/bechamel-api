@@ -8,6 +8,7 @@ package internal
 
 import (
 	"errors"
+	"fmt"
 	"project-ricotta/bechamel-api/model"
 	"reflect"
 	"strings"
@@ -88,6 +89,28 @@ func AddNewUser(newUserProfile model.LasagnaLoveUser) (model.LasagnaLoveUser, er
 	}
 */
 
+/*
+Verify that a provided value is of a suitable type to be assigned to a field (assignee)
+
+	We consider float64 to be assignable to int
+*/
+func valuesAreUpdateCompatible(assignee reflect.Value, value reflect.Value) bool {
+	if assignee.Type() == value.Type() {
+		return true
+	}
+	if strings.HasPrefix(assignee.Type().String(), "int") &&
+		strings.HasPrefix(value.Type().String(), "float") {
+		return true
+	}
+	if strings.HasPrefix(assignee.Type().String(), "float") &&
+		strings.HasPrefix(value.Type().String(), "int") {
+		return true
+	}
+	fmt.Printf("assignee.Type: %s ; value.Type: %s",
+		assignee.Type().String(), value.Type().String())
+	return false
+}
+
 func UpdateUser(userProfile model.LasagnaLoveUser, updates map[string]interface{}) (model.LasagnaLoveUser, error) {
 	var llVolunteerInfo model.LasagnaLoveVolunteerInfo
 	var llRecipientInfo model.LasagnaLoveRecipientInfo
@@ -116,31 +139,46 @@ func UpdateUser(userProfile model.LasagnaLoveUser, updates map[string]interface{
 		case "LastUpdateTime":
 			return model.LasagnaLoveUser{}, errors.New("updates contain field name that is not permitted to be updated")
 		case "Attestations":
-			for attKey := range value.(model.PatchUpdateStruct) {
+			for attKey, attValue := range value.(model.PatchUpdateStruct) {
 				/*
 					if !isKeyInStruct(attKey, userProfile.Attestations) {
 						return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for attestations update")
 					}*/
 				attRfl := reflect.ValueOf(&(userProfile.Attestations)).Elem()
-				if attFld := attRfl.FieldByName(attKey); !attFld.IsValid() {
+				attFld := attRfl.FieldByName(attKey)
+				if !attFld.IsValid() {
 					return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for attestations update")
+				}
+				if !valuesAreUpdateCompatible(attFld, reflect.ValueOf(attValue)) {
+					return model.LasagnaLoveUser{}, errors.New(
+						"invalid field value type supplied for attestations update")
 				}
 			}
 		case "RecipientInfo":
-			for recKey := range value.(model.PatchUpdateStruct) {
+			for recKey, recValue := range value.(model.PatchUpdateStruct) {
 				recRfl := reflect.ValueOf(&llRecipientInfo).Elem()
-				if recFld := recRfl.FieldByName(recKey); !recFld.IsValid() {
-					return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for recipient_info update")
+				recFld := recRfl.FieldByName(recKey)
+				if !recFld.IsValid() {
+					return model.LasagnaLoveUser{}, errors.New(
+						"invalid field name supplied for recipient_info update")
 				}
-				// TODO: make sure value types for incoming updates are compatible
+				if !valuesAreUpdateCompatible(recFld, reflect.ValueOf(recValue)) {
+					return model.LasagnaLoveUser{}, errors.New(
+						"invalid field value type supplied for recipient_info update")
+				}
 			}
 		case "VolunteerInfo":
-			for volKey := range value.(model.PatchUpdateStruct) {
+			for volKey, volValue := range value.(model.PatchUpdateStruct) {
 				volRfl := reflect.ValueOf(&llVolunteerInfo).Elem()
-				if volFld := volRfl.FieldByName(volKey); !volFld.IsValid() {
-					return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for volunteer_info update")
+				volFld := volRfl.FieldByName(volKey)
+				if !volFld.IsValid() {
+					return model.LasagnaLoveUser{}, errors.New(
+						"invalid field name supplied for volunteer_info update")
 				}
-				// TODO: make sure value types for incoming updates are compatible
+				if !valuesAreUpdateCompatible(volFld, reflect.ValueOf(volValue)) {
+					return model.LasagnaLoveUser{}, errors.New(
+						"invalid field name supplied for volunteer_info update")
+				}
 			}
 		}
 	}
