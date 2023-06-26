@@ -10,6 +10,7 @@ import (
 	"errors"
 	"project-ricotta/bechamel-api/model"
 	"reflect"
+	"strings"
 )
 
 func findUser(userFilter func(model.LasagnaLoveUser) bool) (model.LasagnaLoveUser, error) {
@@ -78,33 +79,34 @@ func AddNewUser(newUserProfile model.LasagnaLoveUser) (model.LasagnaLoveUser, er
 	return newUserProfile, nil
 }
 
-func isKeyInStruct(key string, structToCheck interface{}) bool {
-	rfl := reflect.ValueOf(&structToCheck).Elem()
-	if fld := rfl.FieldByName(key); !fld.IsValid() {
-		return true
-	}
-	return false
-}
+/*
+	TODO: not yet able to use this function in UpdateUser below, run-time assertion comes up.
 
-func UpdateUser(userID int, updates map[string]interface{}) (model.LasagnaLoveUser, error) {
-	//	var llAttestations model.LasagnaLoveAttestations
-	//	var llVolunteerInfo model.LasagnaLoveVolunteerInfo
-	//	var llRecipientInfo model.LasagnaLoveRecipientInfo
-	var currentUserProfile model.LasagnaLoveUser
+	func isKeyInStruct(key string, structToCheck interface{}) bool {
+		rfl := reflect.ValueOf(&structToCheck).Elem()
+		return rfl.FieldByName(key).IsValid()
+	}
+*/
+
+func UpdateUser(userProfile model.LasagnaLoveUser, updates map[string]interface{}) (model.LasagnaLoveUser, error) {
+	var llVolunteerInfo model.LasagnaLoveVolunteerInfo
+	var llRecipientInfo model.LasagnaLoveRecipientInfo
 	var didMakeUpdates bool
-
-	_, err := GetUserByID(userID)
-	if err != nil {
-		return model.LasagnaLoveUser{}, errors.New("could not obtain user for supplied ID")
-	}
+	var userID = userProfile.ID
 
 	// The double loop here is intentional - this is to prevent partial updates
 	// by making sure all fields supplied are valid before making any updates
-	for key := range updates {
-		rfl := reflect.ValueOf(&currentUserProfile).Elem()
+	for key, value := range updates {
+
+		rfl := reflect.ValueOf(&userProfile).Elem()
 		if fld := rfl.FieldByName(key); !fld.IsValid() {
 			return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for update")
 		}
+
+		/*
+			if !isKeyInStruct(key, userProfile) {
+				return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for update")
+			}*/
 		switch key {
 		// Fields that are valid but not permitted to be updated
 		case "Id": // this is a bit weird, is being picked up above as invalid field name
@@ -113,34 +115,73 @@ func UpdateUser(userID int, updates map[string]interface{}) (model.LasagnaLoveUs
 			fallthrough
 		case "LastUpdateTime":
 			return model.LasagnaLoveUser{}, errors.New("updates contain field name that is not permitted to be updated")
-			/*
-				case "Attestations":
-					// No, this ain't right, key == "Attestations". Enumerate through the values in the associated struct
-					// How do we borrow from above? Do we need to re-serialize the JSON sub-element?
-					if !isKeyInStruct(key, llAttestations) {
-						return model.LasagnaLoveUser{}, errors.New("updates contain invalid field name in attestations")
-					}
-				case "RecipientInfo":
-					if !isKeyInStruct(key, llRecipientInfo) {
-						return model.LasagnaLoveUser{}, errors.New("updates contain invalid field name in recipient_info")
-					}
-				case "VolunteerInfo":
-					if !isKeyInStruct(key, llVolunteerInfo) {
-						return model.LasagnaLoveUser{}, errors.New("updates contain invalid field name in volunteer_info")
-					}
-			*/
+		case "Attestations":
+			for attKey := range value.(model.PatchUpdateStruct) {
+				/*
+					if !isKeyInStruct(attKey, userProfile.Attestations) {
+						return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for attestations update")
+					}*/
+				attRfl := reflect.ValueOf(&(userProfile.Attestations)).Elem()
+				if attFld := attRfl.FieldByName(attKey); !attFld.IsValid() {
+					return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for attestations update")
+				}
+			}
+		case "RecipientInfo":
+			for recKey := range value.(model.PatchUpdateStruct) {
+				recRfl := reflect.ValueOf(&llRecipientInfo).Elem()
+				if recFld := recRfl.FieldByName(recKey); !recFld.IsValid() {
+					return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for recipient_info update")
+				}
+				// TODO: make sure value types for incoming updates are compatible
+			}
+		case "VolunteerInfo":
+			for volKey := range value.(model.PatchUpdateStruct) {
+				volRfl := reflect.ValueOf(&llVolunteerInfo).Elem()
+				if volFld := volRfl.FieldByName(volKey); !volFld.IsValid() {
+					return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for volunteer_info update")
+				}
+				// TODO: make sure value types for incoming updates are compatible
+			}
 		}
-		// TODO: nested types/type ptrs (e.g. attestations)
 	}
 
 	// TODO: adding and updating will likely need to be datastore dependent and not common.
 	// For the integrated fixed data, note the switch to directly accessing the LasagnaLoveUsersDummyData here.
-	// TODO: need to set the referenced data structures as well, otherwise they need to be filled in full?
 	for key, value := range updates {
-		// TODO: nested types/type ptrs (e.g. attestations)
 		switch key {
 		case "Password":
 			LasagnaLoveUsersDummyData[userID-1].Password = HashPassword(reflect.ValueOf(value).String())
+		case "RecipientInfo":
+			if LasagnaLoveUsersDummyData[userID-1].RecipientInfo == nil {
+				LasagnaLoveUsersDummyData[userID-1].RecipientInfo = &llRecipientInfo
+			}
+			for recKey, recValue := range value.(model.PatchUpdateStruct) {
+				if strings.HasPrefix(reflect.TypeOf(recValue).String(), "float") {
+					reflect.ValueOf(LasagnaLoveUsersDummyData[userID-1].RecipientInfo).Elem().FieldByName(recKey).SetInt(
+						int64(reflect.ValueOf(recValue).Float()))
+				} else {
+					reflect.ValueOf(LasagnaLoveUsersDummyData[userID-1].RecipientInfo).Elem().FieldByName(recKey).Set(
+						reflect.ValueOf(recValue))
+				}
+			}
+		case "VolunteerInfo":
+			if LasagnaLoveUsersDummyData[userID-1].VolunteerInfo == nil {
+				LasagnaLoveUsersDummyData[userID-1].VolunteerInfo = &llVolunteerInfo
+			}
+			for volKey, volValue := range value.(model.PatchUpdateStruct) {
+				if strings.HasPrefix(reflect.TypeOf(volValue).String(), "float") {
+					reflect.ValueOf(LasagnaLoveUsersDummyData[userID-1].VolunteerInfo).Elem().FieldByName(volKey).SetInt(
+						int64(reflect.ValueOf(volValue).Float()))
+				} else {
+					reflect.ValueOf(LasagnaLoveUsersDummyData[userID-1].VolunteerInfo).Elem().FieldByName(volKey).Set(
+						reflect.ValueOf(volValue))
+				}
+			}
+		case "Attestations":
+			for attKey, attValue := range value.(model.PatchUpdateStruct) {
+				reflect.ValueOf(&LasagnaLoveUsersDummyData[userID-1].Attestations).Elem().FieldByName(attKey).Set(
+					reflect.ValueOf(attValue))
+			}
 		default:
 			reflect.ValueOf(&LasagnaLoveUsersDummyData[userID-1]).Elem().FieldByName(key).Set(reflect.ValueOf(value))
 		}
