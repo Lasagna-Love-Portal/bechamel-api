@@ -8,7 +8,6 @@ package internal
 
 import (
 	"errors"
-	"fmt"
 	"project-ricotta/bechamel-api/model"
 	"reflect"
 	"strings"
@@ -80,37 +79,6 @@ func AddNewUser(newUserProfile model.LasagnaLoveUser) (model.LasagnaLoveUser, er
 	return newUserProfile, nil
 }
 
-/*
-	TODO: not yet able to use this function in UpdateUser below, run-time assertion comes up.
-
-	func isKeyInStruct(key string, structToCheck interface{}) bool {
-		rfl := reflect.ValueOf(&structToCheck).Elem()
-		return rfl.FieldByName(key).IsValid()
-	}
-*/
-
-/*
-Verify that a provided value is of a suitable type to be assigned to a field (assignee)
-
-	We consider float64 to be assignable to int
-*/
-func valuesAreUpdateCompatible(assignee reflect.Value, value reflect.Value) bool {
-	if assignee.Type() == value.Type() {
-		return true
-	}
-	if strings.HasPrefix(assignee.Type().String(), "int") &&
-		strings.HasPrefix(value.Type().String(), "float") {
-		return true
-	}
-	if strings.HasPrefix(assignee.Type().String(), "float") &&
-		strings.HasPrefix(value.Type().String(), "int") {
-		return true
-	}
-	fmt.Printf("assignee.Type: %s ; value.Type: %s",
-		assignee.Type().String(), value.Type().String())
-	return false
-}
-
 func UpdateUser(userProfile model.LasagnaLoveUser, updates map[string]interface{}) (model.LasagnaLoveUser, error) {
 	var llVolunteerInfo model.LasagnaLoveVolunteerInfo
 	var llRecipientInfo model.LasagnaLoveRecipientInfo
@@ -120,16 +88,11 @@ func UpdateUser(userProfile model.LasagnaLoveUser, updates map[string]interface{
 	// The double loop here is intentional - this is to prevent partial updates
 	// by making sure all fields supplied are valid before making any updates
 	for key, value := range updates {
-
 		rfl := reflect.ValueOf(&userProfile).Elem()
 		if fld := rfl.FieldByName(key); !fld.IsValid() {
 			return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for update")
 		}
 
-		/*
-			if !isKeyInStruct(key, userProfile) {
-				return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for update")
-			}*/
 		switch key {
 		// Fields that are valid but not permitted to be updated
 		case "Id": // this is a bit weird, is being picked up above as invalid field name
@@ -140,16 +103,12 @@ func UpdateUser(userProfile model.LasagnaLoveUser, updates map[string]interface{
 			return model.LasagnaLoveUser{}, errors.New("updates contain field name that is not permitted to be updated")
 		case "Attestations":
 			for attKey, attValue := range value.(model.PatchUpdateStruct) {
-				/*
-					if !isKeyInStruct(attKey, userProfile.Attestations) {
-						return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for attestations update")
-					}*/
 				attRfl := reflect.ValueOf(&(userProfile.Attestations)).Elem()
 				attFld := attRfl.FieldByName(attKey)
 				if !attFld.IsValid() {
 					return model.LasagnaLoveUser{}, errors.New("invalid field name supplied for attestations update")
 				}
-				if !valuesAreUpdateCompatible(attFld, reflect.ValueOf(attValue)) {
+				if !ValuesAreUpdateCompatible(attFld, reflect.ValueOf(attValue)) {
 					return model.LasagnaLoveUser{}, errors.New(
 						"invalid field value type supplied for attestations update")
 				}
@@ -162,7 +121,7 @@ func UpdateUser(userProfile model.LasagnaLoveUser, updates map[string]interface{
 					return model.LasagnaLoveUser{}, errors.New(
 						"invalid field name supplied for recipient_info update")
 				}
-				if !valuesAreUpdateCompatible(recFld, reflect.ValueOf(recValue)) {
+				if !ValuesAreUpdateCompatible(recFld, reflect.ValueOf(recValue)) {
 					return model.LasagnaLoveUser{}, errors.New(
 						"invalid field value type supplied for recipient_info update")
 				}
@@ -175,7 +134,7 @@ func UpdateUser(userProfile model.LasagnaLoveUser, updates map[string]interface{
 					return model.LasagnaLoveUser{}, errors.New(
 						"invalid field name supplied for volunteer_info update")
 				}
-				if !valuesAreUpdateCompatible(volFld, reflect.ValueOf(volValue)) {
+				if !ValuesAreUpdateCompatible(volFld, reflect.ValueOf(volValue)) {
 					return model.LasagnaLoveUser{}, errors.New(
 						"invalid field name supplied for volunteer_info update")
 				}
@@ -187,6 +146,11 @@ func UpdateUser(userProfile model.LasagnaLoveUser, updates map[string]interface{
 	// For the integrated fixed data, note the switch to directly accessing the LasagnaLoveUsersDummyData here.
 	for key, value := range updates {
 		switch key {
+		case "Attestations":
+			for attKey, attValue := range value.(model.PatchUpdateStruct) {
+				reflect.ValueOf(&LasagnaLoveUsersDummyData[userID-1].Attestations).Elem().FieldByName(attKey).Set(
+					reflect.ValueOf(attValue))
+			}
 		case "Password":
 			LasagnaLoveUsersDummyData[userID-1].Password = HashPassword(reflect.ValueOf(value).String())
 		case "RecipientInfo":
@@ -194,7 +158,15 @@ func UpdateUser(userProfile model.LasagnaLoveUser, updates map[string]interface{
 				LasagnaLoveUsersDummyData[userID-1].RecipientInfo = &llRecipientInfo
 			}
 			for recKey, recValue := range value.(model.PatchUpdateStruct) {
-				if strings.HasPrefix(reflect.TypeOf(recValue).String(), "float") {
+				if strings.HasPrefix(reflect.TypeOf(recValue).String(), "[]") {
+					arrayToUpdate := reflect.ValueOf(LasagnaLoveUsersDummyData[userID-1].RecipientInfo).Elem().FieldByName(recKey)
+					updateArrayLen := reflect.ValueOf(recValue).Len()
+					newArray := reflect.MakeSlice(arrayToUpdate.Type(), 0, updateArrayLen)
+					for i := 0; i < updateArrayLen; i++ {
+						newArray = reflect.Append(newArray, reflect.ValueOf(recValue).Index(i).Elem())
+					}
+					arrayToUpdate.Set(newArray)
+				} else if strings.HasPrefix(reflect.TypeOf(recValue).String(), "float") {
 					reflect.ValueOf(LasagnaLoveUsersDummyData[userID-1].RecipientInfo).Elem().FieldByName(recKey).SetInt(
 						int64(reflect.ValueOf(recValue).Float()))
 				} else {
@@ -207,18 +179,21 @@ func UpdateUser(userProfile model.LasagnaLoveUser, updates map[string]interface{
 				LasagnaLoveUsersDummyData[userID-1].VolunteerInfo = &llVolunteerInfo
 			}
 			for volKey, volValue := range value.(model.PatchUpdateStruct) {
-				if strings.HasPrefix(reflect.TypeOf(volValue).String(), "float") {
+				if strings.HasPrefix(reflect.TypeOf(volValue).String(), "[]") {
+					arrayToUpdate := reflect.ValueOf(LasagnaLoveUsersDummyData[userID-1].VolunteerInfo).Elem().FieldByName(volKey)
+					updateArrayLen := reflect.ValueOf(volValue).Len()
+					newArray := reflect.MakeSlice(arrayToUpdate.Type(), 0, updateArrayLen)
+					for i := 0; i < updateArrayLen; i++ {
+						newArray = reflect.Append(newArray, reflect.ValueOf(volValue).Index(i).Elem())
+					}
+					arrayToUpdate.Set(newArray)
+				} else if strings.HasPrefix(reflect.TypeOf(volValue).String(), "float") {
 					reflect.ValueOf(LasagnaLoveUsersDummyData[userID-1].VolunteerInfo).Elem().FieldByName(volKey).SetInt(
 						int64(reflect.ValueOf(volValue).Float()))
 				} else {
 					reflect.ValueOf(LasagnaLoveUsersDummyData[userID-1].VolunteerInfo).Elem().FieldByName(volKey).Set(
 						reflect.ValueOf(volValue))
 				}
-			}
-		case "Attestations":
-			for attKey, attValue := range value.(model.PatchUpdateStruct) {
-				reflect.ValueOf(&LasagnaLoveUsersDummyData[userID-1].Attestations).Elem().FieldByName(attKey).Set(
-					reflect.ValueOf(attValue))
 			}
 		default:
 			reflect.ValueOf(&LasagnaLoveUsersDummyData[userID-1]).Elem().FieldByName(key).Set(reflect.ValueOf(value))
