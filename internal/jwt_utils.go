@@ -14,30 +14,30 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func GenerateAccessJWT(userName string) (string, error) {
-	return GenerateAccessJWTWithTTL(userName, config.RuntimeConfig.AccessJWTTTL())
+func GenerateAccessJWT(emailAddress string) (string, error) {
+	return GenerateAccessJWTWithTTL(emailAddress, config.RuntimeConfig.AccessJWTTTL())
 }
 
-func GenerateAccessJWTWithTTL(userName string, ttl int) (string, error) {
+func GenerateAccessJWTWithTTL(emailAddress string, ttl int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userName": userName,
-		"nbf":      time.Now().Unix(),
-		"iat":      time.Now().Unix(),
-		"exp":      time.Now().Add(time.Second * time.Duration(ttl)).Unix(),
+		"email": emailAddress,
+		"nbf":   time.Now().Unix(),
+		"iat":   time.Now().Unix(),
+		"exp":   time.Now().Add(time.Second * time.Duration(ttl)).Unix(),
 	})
 	return token.SignedString(config.RuntimeConfig.AccessJWTSigningKey())
 }
 
-func GenerateRefreshJWT(userName string) (string, error) {
-	return GenerateAccessJWTWithTTL(userName, config.RuntimeConfig.RefreshJWTTTL())
+func GenerateRefreshJWT(emailAddress string) (string, error) {
+	return GenerateAccessJWTWithTTL(emailAddress, config.RuntimeConfig.RefreshJWTTTL())
 }
 
-func GenerateRefreshJWTWithTTL(userName string, ttl int) (string, error) {
+func GenerateRefreshJWTWithTTL(emailAddress string, ttl int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userName": userName,
-		"nbf":      time.Now().Unix(),
-		"iat":      time.Now().Unix(),
-		"exp":      time.Now().Add(time.Second * time.Duration(ttl)).Unix(),
+		"email": emailAddress,
+		"nbf":   time.Now().Unix(),
+		"iat":   time.Now().Unix(),
+		"exp":   time.Now().Add(time.Second * time.Duration(ttl)).Unix(),
 	})
 	return token.SignedString(config.RuntimeConfig.RefreshJWTSigningKey())
 }
@@ -61,7 +61,7 @@ func VerifyAccessJWT(jwtTokenString string) (string, error) {
 	if token.Valid {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
 			if err = claims.Valid(); err == nil {
-				return fmt.Sprint(claims["userName"]), nil
+				return fmt.Sprint(claims["email"]), nil
 			} else {
 				return "", errors.New("supplied JWT expired or not yet valid")
 			}
@@ -102,7 +102,7 @@ func VerifyRefreshJWT(jwtTokenString string) (string, error) {
 	if token.Valid {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
 			if err = claims.Valid(); err == nil {
-				return fmt.Sprint(claims["userName"]), nil
+				return fmt.Sprint(claims["email"]), nil
 			} else {
 				return "", errors.New("supplied JWT expired or not yet valid")
 			}
@@ -130,14 +130,14 @@ func GetUserFromAuthHeader(authHeader string) (model.LasagnaLoveUser, error) {
 	}
 
 	tokenString := authHeader[len("Bearer "):]
-	userName, err := VerifyAccessJWT(tokenString)
+	emailAddress, err := VerifyAccessJWT(tokenString)
 	if err != nil {
 		return model.LasagnaLoveUser{}, errors.New("provided authorization token could not be authorized")
 	}
 
-	userProfile, err := GetUserByUserName(userName)
+	userProfile, err := GetUserByEmailAddress(emailAddress)
 	if err != nil {
-		return model.LasagnaLoveUser{}, errors.New("profile not found for user with supplied userName")
+		return model.LasagnaLoveUser{}, errors.New("profile not found for user with supplied email address")
 	}
 
 	return userProfile, nil

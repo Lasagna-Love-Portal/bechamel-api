@@ -11,31 +11,31 @@ import (
 
 func postUserAuthorization(c *gin.Context) {
 	var userAuthorizationBody model.LasagnaLoveAuthRequest
-	var username string
+	var emailAddress string
 	var errors []string
 
 	// First check for a username/password combination
 	if err := c.BindJSON(&userAuthorizationBody); err == nil {
 		if userAuthorizationBody.RefreshToken != "" {
-			username, err = internal.VerifyRefreshJWT(userAuthorizationBody.RefreshToken)
+			emailAddress, err = internal.VerifyRefreshJWT(userAuthorizationBody.RefreshToken)
 			if err != nil {
 				errors = append(errors, "Refresh token invalid or expired")
 			}
 		} else {
-			if userAuthorizationBody.Username == "" {
-				errors = append(errors, "Required parameter userName not supplied or empty")
+			if userAuthorizationBody.Email == "" {
+				errors = append(errors, "Required parameter email not supplied or empty")
 			}
 			if userAuthorizationBody.Password == "" {
 				errors = append(errors, "Required parameter password not supplied or empty")
 			}
 			var lasagnaLoveUser model.LasagnaLoveUser
-			lasagnaLoveUser, err = internal.AuthorizeUser(userAuthorizationBody.Username, userAuthorizationBody.Password)
+			lasagnaLoveUser, err = internal.AuthorizeUser(userAuthorizationBody.Email, userAuthorizationBody.Password)
 			if err != nil {
 				c.JSON(http.StatusUnauthorized,
 					gin.H{"errors": []string{"Supplied user could not be authorized with supplied password"}})
 				return
 			}
-			username = lasagnaLoveUser.Username
+			emailAddress = lasagnaLoveUser.Email
 		}
 	} else {
 		if err.Error() == "EOF" {
@@ -49,13 +49,13 @@ func postUserAuthorization(c *gin.Context) {
 		return
 	}
 
-	accessJWTToken, accessErr := internal.GenerateAccessJWT(username)
+	accessJWTToken, accessErr := internal.GenerateAccessJWT(emailAddress)
 	if accessErr != nil {
 		c.JSON(http.StatusInternalServerError,
 			gin.H{"errors": []string{"Error generating JWT token for supplied userName and password"}})
 		return
 	}
-	refreshJWTToken, refreshErr := internal.GenerateRefreshJWT(username)
+	refreshJWTToken, refreshErr := internal.GenerateRefreshJWT(emailAddress)
 	if refreshErr != nil {
 		c.JSON(http.StatusInternalServerError,
 			gin.H{"errors": []string{"Error generating JWT refresh token"}})
