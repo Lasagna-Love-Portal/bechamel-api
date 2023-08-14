@@ -26,11 +26,11 @@
 
 ### Go language installation (if absent)
 
-Download Go by visiting [its official site](https://golang.org/dl/). On Unix-based systems, employ package managers:
-
+- We are using Go 1.20 for this project. Download this specific version from the [Go 1.20 download page](https://golang.org/dl/go1.20).
+- For Unix-based systems, you can also employ package managers to install Go 1.20:
 ```bash
-brew install go # MacOS
-sudo apt-get install golang # Linux
+brew install go@1.20 # MacOS
+sudo apt-get install golang-1.20 # Linux
 ```
 
 After installing Go, download the `goimports` package:
@@ -205,17 +205,17 @@ The Golangci-lint-action and the unit tests will run in GitHub on all branch pus
 
 You can run the super-linter locally using Docker. First, obtain the super-linter Docker container:
 
-   ```bash
-   docker pull github/super-linter:latest
-   ```
+ ```bash
+ docker pull github/super-linter:latest
+ ```
 
 Then you can use Docker to run the super-linter. Use the environment variables file
 `super-linter.env` in the top level project directory.
 To run against all the files in the project directory, from the top level bechamel-api directory:
 
-   ```bash
-   docker run --env-file super-linter.env -v .:/tmp/lint github/super-linter
-   ```
+ ```bash
+ docker run --env-file super-linter.env -v .:/tmp/lint github/super-linter
+ ```
 
 To narrow the files to lint, pass the file(s) to run as a regular expression
 in the environment variable FILTER_REGEX_INCLUDE. Or to exclude file(s) pass an appropriate
@@ -223,9 +223,9 @@ regular expression in the FILTER_REGEX_EXCLUDE environment variable.
 Use UNIX style `/` forward-slash directory separators.
 For example, to only lint the file DEVELOPMENT.md in the top level directory:
 
-   ```bash
-   docker run --env-file super-linter.env -e FILTER_REGEX_INCLUDE=DEVELOPMENT.md -v .:/tmp/lint github/super-linter
-   ```
+ ```bash
+ docker run --env-file super-linter.env -e FILTER_REGEX_INCLUDE=DEVELOPMENT.md -v .:/tmp/lint github/super-linter
+ ```
 
 You can also use the `super-linter.env` file in the root of the project to store environment variables
 to pass to the `docker` invocation. Use the `--env-file` flag to pass the file:
@@ -257,23 +257,27 @@ And tidy up:
 go mod tidy
 ```
 
+### Compatibility issues
+
+Ensure that you're utilizing `Go 1.20`, as this is the targeted version specifically optimized for this project.
+
 ### Linter specific troubleshooting
 
 #### File not goimports-ed
 
-If you get super-linter errors about files not being goimportes-ed, such as:
+If you encounter super-linter errors such as:
 
-   ```bash
-   api_profile.go:1: File is not `goimports`-ed (goimports)
-   ```
+```bash
+api_profile.go:1: File is not `goimports`-ed (goimports)
+```
 
-Make sure you have the goimports package as detailed in [Go language installation (if absent)](#go-language-installation-if-absent). Run the goimports program on the file:
+Ensure you have the `goimports` package as mentioned in [Go language installation (if absent)](#go-language-installation-if-absent), and run:
 
-   ```bash
-   goimports -local [filename] -w .
-   ```
+```bash
+goimports -local [filename] -w .
+```
 
-This should fix up the ordering of imports in the file.
+This will correct the import statements in the file.
 
 ## Pull requests
 
