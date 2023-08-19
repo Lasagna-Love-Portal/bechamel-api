@@ -10,9 +10,6 @@
   - [API documentation](#api-documentation)
   - [Developing locally](#developing-locally)
     - [Building the project locally](#building-the-project-locally)
-    - [Running the server locally](#running-the-server-locally)
-  - [Developing locally with Docker](#developing-locally-with-docker)
-    - [Viewing container logs](#viewing-container-logs)
   - [Running unit tests](#running-unit-tests)
   - [Writing test functions](#writing-unit-tests)
   - [Running the GitHub super-linter](#running-the-linter)
@@ -24,28 +21,7 @@
 
 ## First-time Setup
 
-### Go language installation (if absent)
-
-Download Go by visiting [its official site](https://golang.org/dl/). On Unix-based systems, employ package managers:
-
-```bash
-brew install go # MacOS
-sudo apt-get install golang # Linux
-```
-
-After installing Go, download the `goimports` package:
-
-```bash
-go install golang.org/x/tools/cmd/goimports@latest
-```
-
-### Verification of Go installation
-
-Confirm your Go installation via this command:
-
-```bash
-go version
-```
+Install [Nix](https://nix.dev/)
 
 ## Developing the Bechamel API
 
@@ -54,26 +30,16 @@ go version
 The Bechamel API documentation can be found in OpenAPI format in the documentation folder in the bechamel-api.yaml file.
 You can view this in an OpenAPI - aware file viewer such as Visual Studio Code to browse the Bechamel API.
 
-### Developing locally
+### Building and run the project
 
-While we encourage developers to use Docker for local development and testing, we understand that for many
-developing locally, outside a local Docker environment, may be more familiar or preferrable.
-To that end we support development locally.
+To verify there are no syntax or compilation issues, you may build the project.
 
-#### Building the project locally
-
-To verify there are no syntax or compilation issues, you may build the project. From the bechamel-api directory:
+From the bechamel-api directory:
 
 ```bash
+nix-shell
 go mod download # download dependencies
 go build .
-```
-
-#### Running the server locally
-
-From a command window in the top-level bechamel-api project directory:
-
-```bash
 go run .
 ```
 
@@ -86,50 +52,6 @@ The Bechamel API server listens on `http://localhost:8080` by default. You shoul
 You can use HTTP development tools such as curl or Postman to interact with the Bechamel API server.
 
 You may stop the server with `Ctrl+C`.
-
-### Developing locally with Docker
-
-First, make sure `docker` is installed. For Windows users:
-You can install Docker Desktop from [Docker](https://docs.docker.com/desktop/install/windows-install/).
-When running on Windows, you'll need to ensure the Windows Subsystem for Linux (WSL) is installed and updated to WSL version 2. To do this:
-1. Open a Powershell windows as administrator
-2. Install WSL and a Linux distribution. To install Ubuntu 22.04:
-    `wsl --install -d Ubuntu-22.04`
-3. To make sure WSL is updated to WSL 2:
-    `wsl --update`
-4. Then make sure Docker Desktop sees the installed WSL and Linux distribution.
-In Docker Desktop's Settings | Resources | WSL integration, make sure the Ubuntu 22.04 distribution is enabled.
-You may need to hit Refresh and wait a minute or two for it to show. Once enabled, hit Apply & Restart to restart the Docker engine.
-
-The Docker configuration for debugging the Bechamel API server with a debugger
-is different from that for running the Bechamel API server without a debugger.
-
-To debug the local-based Docker container:
-1. `docker compose --file docker-compose-dev-local-debug.yml up --build --wait --detach` at the root of the repository.
-2. Attach a debugger such as Visual Studio Code. **You must instantiate a debugging section in order for the program to run.**
-3. Make a request to the app (`curl`, or in Postman or your favorite tool) at `localhost:8080`.
-4. When finished, run `docker compose --file docker-compose-dev-local-debug.yml down` to stop the container.
-
-Once the Docker container is running as per above, you can use the "Local Docker App Debug" configuration in
-the `Run and Debug` tab to connect to the debugger.
-
-[For JetBrains usage ; untested](https://www.jetbrains.com/help/go/attach-to-running-go-processes-with-debugger.html#step-1-create-a-dockerfile-configuration)
-
-
-To run the local-based Docker container without debugging:
-1. `docker compose --file docker-compose-dev-local-run.yml up --build --wait --detach` at the root of the repository.
-2. Make a request to the app (`curl`, or in Postman or your favorite tool) at `localhost:8080`.
-3. When finished, run `docker compose --file docker-compose-dev-local-run.yml down` to stop the container.
-
-**Note** the different YAML filenames used to compose the Docker containers above.
-
-
-**Untested, incomplete** To run the Azure dev deployment, use the docker-compose-dev-azure-deploy.yml file instead.
-
-#### Viewing container logs
-
-1. Start the app (see above).
-2. Run `docker compose --file docker-compose-localdev.yml logs` at the root of the repository. (Add `-f` at the end to stream the logs)
 
 ### Running unit tests
 
