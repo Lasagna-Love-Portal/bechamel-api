@@ -49,5 +49,5 @@ jobs:
           username: ${{ secrets.ftp_username }}
           password: ${{ secrets.ftp_password }}
           log-level: verbose
-          server-dir: ./site/wwwroot/
+          server-dir: /home/site/wwwroot/
           protocol: ftps
