@@ -38,8 +38,8 @@ From the bechamel-api directory:
 
 ```bash
 nix-shell
-go mod download # download dependencies
-go build . # build
+go mod download
+go build .
 go run .
 ```
 
